@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: conecta_mais
+      POSTGRES_PASSWORD: conecta_mais
+      POSTGRES_DB: conecta_mais_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data:
