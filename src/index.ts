@@ -65,6 +65,40 @@ app.withTypeProvider<ZodTypeProvider>().route({
   },
 });
 
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: "POST",
+  url: "/user",
+  schema: {
+    description: "Route to create a user",
+    tags: ["User"],
+    body: z.object({
+      username: z.string(),
+      email: z.email(),
+      password: z.string().min(8),
+      role: z.enum(["user", "organizer"]),
+    }),
+    response: {
+      200: z.object({
+        message: z.string(),
+        code: z.number(),
+      }),
+      201: z.object({
+        message: z.string(),
+        code: z.number(),
+      }),
+      401: z.object({
+        message: z.string(),
+        code: z.number(),
+      }),
+      500: z.object({
+        message: z.string(),
+        code: z.number(),
+      }),
+    },
+  },
+  handler: () => {},
+});
+
 try {
   await app.listen({ port: +process.env.PORT! || 3000 });
 } catch (err) {
