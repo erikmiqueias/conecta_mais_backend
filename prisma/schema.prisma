@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  username           String              @unique
+  email              String              @unique
+  password           String
+  role               Role                @default(USER)
+  createdAt          DateTime            @default(now()) @db.Timestamptz()
+  updatedAt          DateTime            @updatedAt @db.Timestamptz()
+  events             Event[]
+  eventSubscriptions EventSubscription[]
+  eventReviews       EventReview[]
+}
+
+model Event {
+  id            String    @id @default(uuid())
+  name          String
+  description   String    @db.Text
+  eventType     EventType
+  eventAddress  String
+  latitude      Decimal   @db.Decimal(10, 7)
+  longitude     Decimal   @db.Decimal(10, 7)
+  accessCode    String    @unique
+  startDateTime DateTime  @db.Timestamptz()
+  endDateTime   DateTime  @db.Timestamptz()
+  createdAt     DateTime  @default(now()) @db.Timestamptz()
+  updatedAt     DateTime  @updatedAt @db.Timestamptz()
+  deletedAt     DateTime? @db.Timestamptz()
+
+  organizerId String
+  organizer   User   @relation(fields: [organizerId], references: [id], onDelete: Restrict)
+
+  eventSubscriptions EventSubscription[]
+  eventReviews       EventReview[]
+}
+
+model EventSubscription {
+  id                   String   @id @default(uuid())
+  subscriptionDateTime DateTime @default(now()) @db.Timestamptz()
+  userId               String
+  eventId              String
+  user                 User     @relation(fields: [userId], references: [id])
+  event                Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+model EventReview {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+  userId    String
+  eventId   String
+  user      User     @relation(fields: [userId], references: [id])
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+enum Role {
+  USER
+  ORGANIZER
+}
+
+enum EventType {
+  PRIVATE
+  PUBLIC
+}
