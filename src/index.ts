@@ -8,7 +8,9 @@ import {
   validatorCompiler,
   ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import { z } from "zod";
+
+import { ErrorSchema, UserSchema } from "./schemas/index.js";
+import { CreateUserUseCase } from "./usecases/user/create-user.js";
 
 const app = Fastify({
   logger: true,
@@ -19,6 +21,8 @@ app.setSerializerCompiler(serializerCompiler);
 
 app.register(fastifyCors, {
   origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 });
 
 app.register(fastifySwagger, {
@@ -49,54 +53,38 @@ await app.register(fastifySwaggerUI, {
 });
 
 app.withTypeProvider<ZodTypeProvider>().route({
-  method: "GET",
-  url: "/",
-  schema: {
-    description: "Hello world",
-    tags: ["Hello World"],
-    response: {
-      200: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-  handler: () => {
-    return { message: "Hello world" };
-  },
-});
-
-app.withTypeProvider<ZodTypeProvider>().route({
   method: "POST",
-  url: "/user",
+  url: "/user/create",
   schema: {
-    description: "Route to create a user",
-    tags: ["User"],
-    body: z.object({
-      username: z.string(),
-      email: z.email(),
-      password: z.string().min(8),
-      role: z.enum(["user", "organizer"]),
-    }),
+    body: UserSchema.omit({ id: true, createdAt: true, updatedAt: true }),
     response: {
-      200: z.object({
-        message: z.string(),
-        code: z.number(),
-      }),
-      201: z.object({
-        message: z.string(),
-        code: z.number(),
-      }),
-      401: z.object({
-        message: z.string(),
-        code: z.number(),
-      }),
-      500: z.object({
-        message: z.string(),
-        code: z.number(),
-      }),
+      201: UserSchema,
+      400: ErrorSchema,
+      500: ErrorSchema,
     },
   },
-  handler: () => {},
+  handler: async (request, reply) => {
+    const { email, password, role, username } = request.body;
+    const createUserUseCase = new CreateUserUseCase();
+    try {
+      const user = await createUserUseCase.execute({
+        email,
+        password,
+        role,
+        username,
+      });
+
+      return reply.status(201).send(user);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      app.log.error(error);
+
+      return reply.status(500).send({
+        message: error.message,
+        code: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  },
 });
 
 try {
