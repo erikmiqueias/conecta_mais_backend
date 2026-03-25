@@ -25,3 +25,12 @@ export interface OutputGetUserByEmailDTO {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface OutputGetUserByIdDTO {
+  id: string;
+  username: string;
+  email: string;
+  role: Role;
+  createdAt: Date;
+  updatedAt: Date;
+}
