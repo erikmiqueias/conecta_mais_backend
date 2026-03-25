@@ -2,12 +2,17 @@ import bcrypt from "bcrypt";
 
 import { InputCreateUserDTO } from "../../dtos/user.dto.js";
 import { EmailAlreadyExistsError } from "../../errors/errors.js";
-import { CreateUserRepository } from "../../repositories/user/create-user.js";
+import { ICreateUserRepository } from "../../interfaces/user/repositories/create-user.js";
+import { ICreateUserUseCase } from "../../interfaces/user/usecases/create-user.js";
 import { GetUserByEmailRepository } from "../../repositories/user/get-user-by-email.js";
 
-export class CreateUserUseCase {
+export class CreateUserUseCase implements ICreateUserUseCase {
+  constructor(
+    private readonly createUserRepository: ICreateUserRepository,
+    private readonly getUserByEmailRepository: GetUserByEmailRepository,
+  ) {}
   async execute(data: InputCreateUserDTO) {
-    const emailAlreadyExists = await new GetUserByEmailRepository().execute(
+    const emailAlreadyExists = await this.getUserByEmailRepository.execute(
       data.email,
     );
 
@@ -16,7 +21,7 @@ export class CreateUserUseCase {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const user = new CreateUserRepository().execute({
+    const user = await this.createUserRepository.execute({
       ...data,
       password: hashedPassword,
     });
