@@ -76,7 +76,6 @@ export const userRoutes = (app: FastifyInstance) => {
         401: ErrorSchema,
         403: ErrorSchema,
         404: ErrorSchema,
-        400: ErrorSchema,
         500: ErrorSchema,
       },
     },
@@ -116,10 +115,14 @@ export const userRoutes = (app: FastifyInstance) => {
             code: "UNAUTHORIZED",
           });
         }
+
+        return reply.status(500).send({
+          message: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
       }
     },
   });
-
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
     url: "/user/auth/refresh-token",
@@ -135,9 +138,6 @@ export const userRoutes = (app: FastifyInstance) => {
           }),
         }),
         401: ErrorSchema,
-        403: ErrorSchema,
-        404: ErrorSchema,
-        400: ErrorSchema,
         500: ErrorSchema,
       },
     },
@@ -161,6 +161,11 @@ export const userRoutes = (app: FastifyInstance) => {
             code: "UNAUTHORIZED",
           });
         }
+
+        return resply.status(500).send({
+          message: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
       }
     },
   });
