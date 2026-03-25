@@ -26,8 +26,3 @@ export const UserSchema = z.object({
 
 export const ResponseUserSchema = UserSchema.omit({ password: true });
 export const LoginUserSchema = UserSchema.pick({ email: true, password: true });
-
-export const ErrorSchema = z.object({
-  message: z.string(),
-  code: z.string(),
-});
