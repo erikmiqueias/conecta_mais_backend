@@ -4,7 +4,8 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 
-import { generateToken } from "../helpers/tokens.js";
+import { Role } from "../generated/prisma/enums.js";
+import { generateToken, verifyToken } from "../helpers/tokens.js";
 import { CreateUserRepository } from "../repositories/user/create-user.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import {
@@ -55,10 +56,9 @@ export const userRoutes = (app: FastifyInstance) => {
       }
     },
   });
-
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/user/login",
+    url: "/user/auth/login",
     schema: {
       body: LoginUserSchema,
       response: {
@@ -98,7 +98,7 @@ export const userRoutes = (app: FastifyInstance) => {
 
         if (!isPasswordValid) {
           return reply.status(403).send({
-            message: "Invalid password",
+            message: "Invalid email or password",
             code: "FORBIDDEN",
           });
         }
@@ -112,6 +112,51 @@ export const userRoutes = (app: FastifyInstance) => {
       } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
           return reply.status(401).send({
+            message: error.message,
+            code: "UNAUTHORIZED",
+          });
+        }
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "POST",
+    url: "/user/auth/refresh-token",
+    schema: {
+      body: z.object({
+        refreshToken: z.string(),
+      }),
+      response: {
+        200: z.object({
+          tokens: z.object({
+            accessToken: z.string(),
+            refreshToken: z.string(),
+          }),
+        }),
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        400: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, resply) => {
+      const { refreshToken } = request.body;
+
+      try {
+        const validToken = verifyToken(refreshToken) as {
+          userId: string;
+          role: Role;
+        };
+        const tokens = generateToken(validToken.userId, validToken.role);
+
+        return resply.status(200).send({
+          tokens,
+        });
+      } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) {
+          return resply.status(401).send({
             message: error.message,
             code: "UNAUTHORIZED",
           });

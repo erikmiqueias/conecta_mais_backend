@@ -18,3 +18,11 @@ export const generateToken = (userId: string, role: Role) => {
 
   return { accessToken, refreshToken };
 };
+
+export const verifyToken = (token: string) => {
+  if (!jwtSecret) {
+    throw jwt.JsonWebTokenError;
+  }
+  const payload = jwt.verify(token, jwtSecret);
+  return payload;
+};
