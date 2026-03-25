@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 
 import { generateToken } from "../helpers/tokens.js";
@@ -110,7 +110,7 @@ export const userRoutes = (app: FastifyInstance) => {
           user,
         });
       } catch (error) {
-        if (error instanceof JsonWebTokenError) {
+        if (error instanceof jwt.JsonWebTokenError) {
           return reply.status(401).send({
             message: error.message,
             code: "UNAUTHORIZED",

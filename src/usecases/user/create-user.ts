@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 import { InputCreateUserDTO } from "../../dtos/user.dto.js";
 import { EmailAlreadyExistsError } from "../../errors/errors.js";
