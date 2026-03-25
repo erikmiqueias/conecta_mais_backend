@@ -3,3 +3,9 @@ export class EmailAlreadyExistsError extends Error {
     super("Email already exists");
   }
 }
+
+export class UserNotFoundError extends Error {
+  constructor() {
+    super("User not found");
+  }
+}
