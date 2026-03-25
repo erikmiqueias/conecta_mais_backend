@@ -20,9 +20,12 @@ export const UserSchema = z.object({
       error: "Invalid role",
     })
     .default("USER"),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 export const ResponseUserSchema = UserSchema.omit({ password: true });
+export const LoginUserSchema = UserSchema.pick({ email: true, password: true });
 
 export const ErrorSchema = z.object({
   message: z.string(),

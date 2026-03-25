@@ -1,10 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
 
 import { CreateUserRepository } from "../repositories/user/create-user.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import {
   ErrorSchema,
+  LoginUserSchema,
   ResponseUserSchema,
   UserSchema,
 } from "../schemas/index.js";
@@ -49,5 +51,28 @@ export const userRoutes = (app: FastifyInstance) => {
         });
       }
     },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "POST",
+    url: "/user/login",
+    schema: {
+      body: LoginUserSchema,
+      response: {
+        200: z.object({
+          token: z.jwt(),
+          user: ResponseUserSchema.pick({
+            id: true,
+            username: true,
+            role: true,
+          }),
+        }),
+        401: ErrorSchema,
+        403: ErrorSchema,
+        400: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async () => {},
   });
 };
