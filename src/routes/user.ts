@@ -13,7 +13,7 @@ import {
   LoginUserSchema,
   ResponseUserSchema,
   UserSchema,
-} from "../schemas/index.js";
+} from "../schemas/user.schema.js";
 import { CreateUserUseCase } from "../usecases/user/create-user.js";
 
 export const userRoutes = (app: FastifyInstance) => {
@@ -21,7 +21,7 @@ export const userRoutes = (app: FastifyInstance) => {
     method: "POST",
     url: "/user/create",
     schema: {
-      body: UserSchema.omit({ id: true }),
+      body: UserSchema.omit({ id: true, createdAt: true, updatedAt: true }),
       response: {
         201: ResponseUserSchema,
         400: ErrorSchema,
