@@ -8,6 +8,7 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
+import { authRoutes } from "./routes/auth.js";
 import { userRoutes } from "./routes/user.js";
 
 const app = Fastify({
@@ -50,7 +51,7 @@ await app.register(fastifySwaggerUI, {
   routePrefix: "/docs",
 });
 app.register(userRoutes);
-
+app.register(authRoutes);
 try {
   await app.listen({ port: +process.env.PORT! || 3000 });
 } catch (err) {
