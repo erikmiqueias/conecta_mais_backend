@@ -28,7 +28,6 @@ export const authRoutes = (app: FastifyInstance) => {
           }),
         }),
         401: ErrorSchema,
-        403: ErrorSchema,
         404: ErrorSchema,
         500: ErrorSchema,
       },
@@ -50,9 +49,9 @@ export const authRoutes = (app: FastifyInstance) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
-          return reply.status(403).send({
+          return reply.status(401).send({
             message: "Invalid email or password",
-            code: "FORBIDDEN",
+            code: "UNAUTHORIZED",
           });
         }
 
