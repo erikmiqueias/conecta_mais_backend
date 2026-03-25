@@ -15,3 +15,13 @@ export interface OutputCreateUserDTO {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface OutputGetUserByEmailDTO {
+  id: string;
+  password: string;
+  username: string;
+  email: string;
+  role: Role;
+  createdAt: Date;
+  updatedAt: Date;
+}

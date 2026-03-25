@@ -1,7 +1,10 @@
+import bcrypt from "bcrypt";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { JsonWebTokenError } from "jsonwebtoken";
 import { z } from "zod";
 
+import { generateToken } from "../helpers/tokens.js";
 import { CreateUserRepository } from "../repositories/user/create-user.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import {
@@ -60,7 +63,10 @@ export const userRoutes = (app: FastifyInstance) => {
       body: LoginUserSchema,
       response: {
         200: z.object({
-          token: z.jwt(),
+          tokens: z.object({
+            accessToken: z.string(),
+            refreshToken: z.string(),
+          }),
           user: ResponseUserSchema.pick({
             id: true,
             username: true,
@@ -69,10 +75,48 @@ export const userRoutes = (app: FastifyInstance) => {
         }),
         401: ErrorSchema,
         403: ErrorSchema,
+        404: ErrorSchema,
         400: ErrorSchema,
         500: ErrorSchema,
       },
     },
-    handler: async () => {},
+    handler: async (request, reply) => {
+      const { email, password } = request.body;
+      const getUserByEmailRepository = new GetUserByEmailRepository();
+
+      try {
+        const user = await getUserByEmailRepository.execute(email);
+
+        if (!user) {
+          return reply.status(404).send({
+            message: "User not found",
+            code: "NOT_FOUND",
+          });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+          return reply.status(403).send({
+            message: "Invalid password",
+            code: "FORBIDDEN",
+          });
+        }
+
+        return reply.status(200).send({
+          tokens: {
+            ...generateToken(user.id, user.role),
+          },
+          user,
+        });
+      } catch (error) {
+        if (error instanceof JsonWebTokenError) {
+          return reply.status(401).send({
+            message: error.message,
+            code: "UNAUTHORIZED",
+          });
+        }
+      }
+    },
   });
 };
