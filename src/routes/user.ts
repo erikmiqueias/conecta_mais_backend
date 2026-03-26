@@ -14,7 +14,6 @@ import { ErrorSchema } from "../schemas/error.schema.js";
 import {
   CreateUserInputSchema,
   UserOutputSchema,
-  UserSchema,
 } from "../schemas/user.schema.js";
 import { CreateUserUseCase } from "../usecases/user/create-user.js";
 import { DeleteUserUseCase } from "../usecases/user/delete-user.js";
@@ -50,7 +49,6 @@ export const userRoutes = (app: FastifyInstance) => {
 
         return reply.status(201).send(user);
       } catch (error) {
-        app.log.error(error);
         if (error instanceof EmailAlreadyExistsError) {
           return reply.status(400).send({
             message: error.message,
@@ -71,7 +69,6 @@ export const userRoutes = (app: FastifyInstance) => {
     method: "DELETE",
     url: "/user/:userId",
     onRequest: app.authenticate,
-
     schema: {
       security: [{ bearerAuth: [] }],
       params: z.object({
@@ -92,9 +89,8 @@ export const userRoutes = (app: FastifyInstance) => {
       const { userId } = request.params;
 
       const loggedInUser = request.user.sub;
-      const loggedInUserRole = request.user.role;
 
-      if (loggedInUser !== userId && loggedInUserRole !== "ORGANIZER") {
+      if (loggedInUser !== userId) {
         return reply.status(401).send({
           message: "Unauthorized",
           code: "UNAUTHORIZED",
@@ -141,7 +137,7 @@ export const userRoutes = (app: FastifyInstance) => {
         userId: z.uuid({ error: "Invalid UUId" }),
       }),
       response: {
-        200: UserSchema.omit({ password: true }),
+        200: UserOutputSchema,
         400: ErrorSchema,
         401: ErrorSchema,
         404: ErrorSchema,
@@ -152,9 +148,8 @@ export const userRoutes = (app: FastifyInstance) => {
       const { userId } = request.params;
 
       const loggedInUser = request.user.sub;
-      const loggedInUserRole = request.user.role;
 
-      if (loggedInUser !== userId && loggedInUserRole !== "ORGANIZER") {
+      if (loggedInUser !== userId) {
         return reply.status(401).send({
           message: "Unauthorized",
           code: "UNAUTHORIZED",
