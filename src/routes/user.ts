@@ -14,6 +14,7 @@ import { ErrorSchema } from "../schemas/error.schema.js";
 import { UserSchema } from "../schemas/user.schema.js";
 import { CreateUserUseCase } from "../usecases/user/create-user.js";
 import { DeleteUserUseCase } from "../usecases/user/delete-user.js";
+import { GetUserByIdUseCase } from "../usecases/user/get-user-by-id.js";
 
 export const userRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -117,6 +118,60 @@ export const userRoutes = (app: FastifyInstance) => {
             code: "NOT_FOUND",
           });
         }
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/user/:userId",
+    onRequest: app.authenticate,
+    schema: {
+      security: [{ bearerAuth: [] }],
+      params: z.object({
+        userId: z.uuid({ error: "Invalid UUId" }),
+      }),
+      response: {
+        200: UserSchema.omit({ password: true }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { userId } = request.params;
+
+      const loggedInUser = request.user.sub;
+      const loggedInUserRole = request.user.role;
+
+      if (loggedInUser !== userId && loggedInUserRole !== "ORGANIZER") {
+        return reply.status(401).send({
+          message: "Unauthorized",
+          code: "UNAUTHORIZED",
+        });
+      }
+
+      const getUserByIdRepository = new GetUserByIdRepository();
+      const getUserByIdUseCase = new GetUserByIdUseCase(getUserByIdRepository);
+
+      try {
+        const user = await getUserByIdUseCase.execute(userId);
+
+        return reply.status(200).send(user!);
+      } catch (error) {
+        if (error instanceof UserNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "NOT_FOUND",
+          });
+        }
+
         const errorMessage =
           error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({
