@@ -16,25 +16,7 @@ const UserCoreSchema = {
 
 export const UserSchema = z.object({
   id: z.uuid({ error: "Invalid UUId" }),
-  username: z.string().trim().min(1, {
-    error: "Username is required",
-  }),
-  email: z.email({
-    message: "Invalid email",
-  }),
-  password: z
-    .string()
-    .min(1, {
-      error: "Password is required",
-    })
-    .max(8, {
-      error: "Password must be less than 8 characters",
-    }),
-  role: z
-    .enum(["USER", "ORGANIZER"], {
-      error: "Invalid role",
-    })
-    .default("USER"),
+  ...UserCoreSchema,
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 });
@@ -51,4 +33,17 @@ export const UserOutputSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const LoginUserSchema = UserSchema.pick({ email: true, password: true });
+export const GetUserByEmailOutputSchema = z.object({
+  ...UserCoreSchema,
+  password: z.string(),
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const LoginUserSchema = z.object({
+  email: z.email({
+    message: "Invalid email",
+  }),
+  password: z.string().min(1).max(8),
+});
