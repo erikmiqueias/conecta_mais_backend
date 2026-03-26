@@ -1,7 +1,8 @@
 import fastifyCors from "@fastify/cors";
+import fastifyJwt from "@fastify/jwt";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUI from "@fastify/swagger-ui";
-import Fastify from "fastify";
+import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -17,6 +18,44 @@ const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+app.register(fastifyJwt, {
+  secret: process.env.JWT_SECRET!,
+});
+
+app.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    await request.jwtVerify();
+
+    if (request.user.type !== "access") {
+      throw new Error("Invalid token type");
+    }
+  } catch (error) {
+    app.log.error(error);
+    return reply
+      .status(401)
+      .send({ message: "Unauthorized", code: "UNAUTHORIZED" });
+  }
+});
+
+app.decorate(
+  "requireOrganizer",
+  async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await request.jwtVerify();
+      if (request.user.role !== "ORGANIZER") {
+        return reply
+          .status(403)
+          .send({ message: "Forbidden", code: "FORBIDDEN" });
+      }
+    } catch (error) {
+      app.log.error(error);
+      return reply
+        .status(401)
+        .send({ message: "Unauthorized", code: "UNAUTHORIZED" });
+    }
+  },
+);
 
 app.register(fastifyCors, {
   origin: "*",

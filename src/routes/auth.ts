@@ -1,11 +1,9 @@
 import bcrypt from "bcryptjs";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import jwt from "jsonwebtoken";
 import { z } from "zod";
 
 import { Role } from "../generated/prisma/enums.js";
-import { generateToken, verifyToken } from "../helpers/tokens.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import { ErrorSchema } from "../schemas/error.schema.js";
 import { LoginUserSchema, UserSchema } from "../schemas/user.schema.js";
@@ -28,7 +26,6 @@ export const authRoutes = (app: FastifyInstance) => {
           }),
         }),
         401: ErrorSchema,
-        404: ErrorSchema,
         500: ErrorSchema,
       },
     },
@@ -40,9 +37,9 @@ export const authRoutes = (app: FastifyInstance) => {
         const user = await getUserByEmailRepository.execute(email);
 
         if (!user) {
-          return reply.status(404).send({
-            message: "User not found",
-            code: "NOT_FOUND",
+          return reply.status(401).send({
+            message: "Invalid email or password",
+            code: "UNAUTHORIZED",
           });
         }
 
@@ -55,20 +52,41 @@ export const authRoutes = (app: FastifyInstance) => {
           });
         }
 
+        const accessToken = await reply.jwtSign(
+          {
+            sub: user.id,
+            role: user.role,
+            type: "access",
+          },
+          {
+            expiresIn: "15m",
+          },
+        );
+
+        const refreshToken = await reply.jwtSign(
+          {
+            sub: user.id,
+            role: user.role,
+            type: "refresh",
+          },
+          {
+            expiresIn: "7d",
+          },
+        );
+
         return reply.status(200).send({
           tokens: {
-            ...generateToken(user.id, user.role),
+            accessToken,
+            refreshToken,
           },
-          user,
+          user: {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+          },
         });
       } catch (error) {
-        if (error instanceof jwt.JsonWebTokenError) {
-          return reply.status(401).send({
-            message: error.message,
-            code: "UNAUTHORIZED",
-          });
-        }
-
+        app.log.error(error);
         return reply.status(500).send({
           message: "Internal server error",
           code: "INTERNAL_SERVER_ERROR",
@@ -81,7 +99,7 @@ export const authRoutes = (app: FastifyInstance) => {
     url: "/user/auth/refresh-token",
     schema: {
       body: z.object({
-        accessToken: z.string(),
+        refreshToken: z.jwt({ error: "Invalid refresh token" }),
       }),
       response: {
         200: z.object({
@@ -94,28 +112,43 @@ export const authRoutes = (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
-    handler: async (request, resply) => {
-      const { accessToken } = request.body;
-
+    handler: async (request, reply) => {
+      const { refreshToken } = request.body;
       try {
-        const validToken = verifyToken(accessToken) as {
-          userId: string;
+        const decodedToken = app.jwt.verify<{
+          sub: string;
           role: Role;
-        };
-        const tokens = generateToken(validToken.userId, validToken.role);
+          type: "access" | "refresh";
+        }>(refreshToken);
 
-        return resply.status(200).send({
-          tokens,
-        });
-      } catch (error) {
-        if (error instanceof jwt.JsonWebTokenError) {
-          return resply.status(401).send({
-            message: error.message,
+        if (decodedToken.type !== "refresh") {
+          return reply.status(401).send({
+            message: "Invalid refresh token",
             code: "UNAUTHORIZED",
           });
         }
 
-        return resply.status(500).send({
+        const newAccessToken = await reply.jwtSign({
+          sub: decodedToken.sub,
+          role: decodedToken.role,
+          type: "access",
+        });
+
+        const newRefreshToken = await reply.jwtSign({
+          sub: decodedToken.sub,
+          role: decodedToken.role,
+          type: "refresh",
+        });
+
+        return reply.status(200).send({
+          tokens: {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+          },
+        });
+      } catch (error) {
+        app.log.error(error);
+        return reply.status(500).send({
           message: "Internal server error",
           code: "INTERNAL_SERVER_ERROR",
         });
