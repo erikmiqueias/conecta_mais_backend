@@ -24,5 +24,4 @@ export const UserSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
-export const ResponseUserSchema = UserSchema.omit({ password: true });
 export const LoginUserSchema = UserSchema.pick({ email: true, password: true });

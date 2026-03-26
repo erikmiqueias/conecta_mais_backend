@@ -8,7 +8,7 @@ import { Role } from "../generated/prisma/enums.js";
 import { generateToken, verifyToken } from "../helpers/tokens.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import { ErrorSchema } from "../schemas/error.schema.js";
-import { LoginUserSchema, ResponseUserSchema } from "../schemas/user.schema.js";
+import { LoginUserSchema, UserSchema } from "../schemas/user.schema.js";
 export const authRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
@@ -21,7 +21,7 @@ export const authRoutes = (app: FastifyInstance) => {
             accessToken: z.string(),
             refreshToken: z.string(),
           }),
-          user: ResponseUserSchema.pick({
+          user: UserSchema.pick({
             id: true,
             username: true,
             role: true,
@@ -81,7 +81,7 @@ export const authRoutes = (app: FastifyInstance) => {
     url: "/user/auth/refresh-token",
     schema: {
       body: z.object({
-        refreshToken: z.string(),
+        accessToken: z.string(),
       }),
       response: {
         200: z.object({
@@ -95,10 +95,10 @@ export const authRoutes = (app: FastifyInstance) => {
       },
     },
     handler: async (request, resply) => {
-      const { refreshToken } = request.body;
+      const { accessToken } = request.body;
 
       try {
-        const validToken = verifyToken(refreshToken) as {
+        const validToken = verifyToken(accessToken) as {
           userId: string;
           role: Role;
         };
