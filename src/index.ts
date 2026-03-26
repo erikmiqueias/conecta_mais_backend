@@ -19,24 +19,33 @@ const app = Fastify({
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+app.register(fastifyCors, {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+});
+
 app.register(fastifyJwt, {
   secret: process.env.JWT_SECRET!,
 });
 
-app.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
-  try {
-    await request.jwtVerify();
+app.decorate(
+  "authenticate",
+  async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      await request.jwtVerify();
 
-    if (request.user.type !== "access") {
-      throw new Error("Invalid token type");
+      if (request.user.type !== "access") {
+        throw new Error("Invalid token type");
+      }
+    } catch (error) {
+      app.log.error(error);
+      return reply
+        .status(401)
+        .send({ message: "Unauthorized", code: "UNAUTHORIZED" });
     }
-  } catch (error) {
-    app.log.error(error);
-    return reply
-      .status(401)
-      .send({ message: "Unauthorized", code: "UNAUTHORIZED" });
-  }
-});
+  },
+);
 
 app.decorate(
   "requireOrganizer",
@@ -57,12 +66,6 @@ app.decorate(
   },
 );
 
-app.register(fastifyCors, {
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-});
-
 app.register(fastifySwagger, {
   openapi: {
     info: {
@@ -76,6 +79,15 @@ app.register(fastifySwagger, {
         url: `http://localhost:${process.env.PORT || 3000}`,
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
   transform: jsonSchemaTransform,
 
