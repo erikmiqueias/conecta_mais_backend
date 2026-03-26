@@ -11,7 +11,11 @@ import { DeleteUserRepository } from "../repositories/user/delete-user.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import { GetUserByIdRepository } from "../repositories/user/get-user-by-id.js";
 import { ErrorSchema } from "../schemas/error.schema.js";
-import { UserSchema } from "../schemas/user.schema.js";
+import {
+  CreateUserInputSchema,
+  UserOutputSchema,
+  UserSchema,
+} from "../schemas/user.schema.js";
 import { CreateUserUseCase } from "../usecases/user/create-user.js";
 import { DeleteUserUseCase } from "../usecases/user/delete-user.js";
 import { GetUserByIdUseCase } from "../usecases/user/get-user-by-id.js";
@@ -21,9 +25,9 @@ export const userRoutes = (app: FastifyInstance) => {
     method: "POST",
     url: "/user/create",
     schema: {
-      body: UserSchema.omit({ id: true, createdAt: true, updatedAt: true }),
+      body: CreateUserInputSchema,
       response: {
-        201: UserSchema.omit({ password: true }),
+        201: UserOutputSchema,
         400: ErrorSchema,
         500: ErrorSchema,
       },
