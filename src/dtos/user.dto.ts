@@ -1,36 +1,14 @@
-import { Role } from "../generated/prisma/enums.js";
+import { z } from "zod";
 
-export interface InputCreateUserDTO {
-  username: string;
-  email: string;
-  password: string;
-  role: Role;
-}
+import {
+  CreateUserInputSchema,
+  GetUserByEmailOutputSchema,
+  UserOutputSchema,
+} from "../schemas/user.schema.js";
 
-export interface OutputCreateUserDTO {
-  id: string;
-  username: string;
-  email: string;
-  role: Role;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface OutputGetUserByEmailDTO {
-  id: string;
-  password: string;
-  username: string;
-  email: string;
-  role: Role;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface OutputGetUserByIdDTO {
-  id: string;
-  username: string;
-  email: string;
-  role: Role;
-  createdAt: Date;
-  updatedAt: Date;
-}
+export type InputCreateUserDTO = z.infer<typeof CreateUserInputSchema>;
+export type OutputCreateUserDTO = z.infer<typeof UserOutputSchema>;
+export type OutputGetUserByIdDTO = z.infer<typeof UserOutputSchema>;
+export type OutputGetUserByEmailDTO = z.infer<
+  typeof GetUserByEmailOutputSchema
+>;
