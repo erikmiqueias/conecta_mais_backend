@@ -65,7 +65,10 @@ export const userRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
     url: "/user/:userId",
+    onRequest: app.authenticate,
+
     schema: {
+      security: [{ bearerAuth: [] }],
       params: z.object({
         userId: z.uuid({ error: "Invalid UUId" }),
       }),
@@ -82,6 +85,17 @@ export const userRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const { userId } = request.params;
+
+      const loggedInUser = request.user.sub;
+      const loggedInUserRole = request.user.role;
+
+      if (loggedInUser !== userId && loggedInUserRole !== "ORGANIZER") {
+        return reply.status(401).send({
+          message: "Unauthorized",
+          code: "UNAUTHORIZED",
+        });
+      }
+
       const deleteUserRepository = new DeleteUserRepository();
       const getUserByIdRepository = new GetUserByIdRepository();
       const deleteUserUseCase = new DeleteUserUseCase(
