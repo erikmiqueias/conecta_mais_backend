@@ -86,9 +86,10 @@ export const authRoutes = (app: FastifyInstance) => {
           },
         });
       } catch (error) {
-        app.log.error(error);
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({
-          message: "Internal server error",
+          message: errorMessage,
           code: "INTERNAL_SERVER_ERROR",
         });
       }
@@ -147,9 +148,10 @@ export const authRoutes = (app: FastifyInstance) => {
           },
         });
       } catch (error) {
-        app.log.error(error);
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({
-          message: "Internal server error",
+          message: errorMessage,
           code: "INTERNAL_SERVER_ERROR",
         });
       }
