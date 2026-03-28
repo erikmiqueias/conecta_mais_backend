@@ -40,10 +40,3 @@ export const GetUserByEmailOutputSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
-
-export const LoginUserSchema = z.object({
-  email: z.email({
-    message: "Invalid email",
-  }),
-  password: z.string().min(1).max(8),
-});

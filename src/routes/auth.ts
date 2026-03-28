@@ -5,26 +5,16 @@ import { z } from "zod";
 
 import { Role } from "../generated/prisma/enums.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
+import { AuthOutputSchema, AuthSchema } from "../schemas/auth.schema.js";
 import { ErrorSchema } from "../schemas/error.schema.js";
-import { LoginUserSchema, UserSchema } from "../schemas/user.schema.js";
 export const authRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
     url: "/user/auth/login",
     schema: {
-      body: LoginUserSchema,
+      body: AuthSchema,
       response: {
-        200: z.object({
-          tokens: z.object({
-            accessToken: z.string(),
-            refreshToken: z.string(),
-          }),
-          user: UserSchema.pick({
-            id: true,
-            username: true,
-            role: true,
-          }),
-        }),
+        200: AuthOutputSchema,
         401: ErrorSchema,
         500: ErrorSchema,
       },
