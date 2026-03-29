@@ -1,8 +1,6 @@
-import {
-  InputCreateUserDTO,
-  OutputCreateUserDTO,
-} from "../../dtos/user.dto.js";
-import { ICreateUserRepository } from "../../interfaces/user/repositories/index.js";
+import { InputCreateUserDTO, OutputCreateUserDTO } from "@dtos/user.dto.js";
+import { ICreateUserRepository } from "@interfaces/user/repositories/index.js";
+
 import { prisma } from "../../lib/db.js";
 
 export class CreateUserRepository implements ICreateUserRepository {

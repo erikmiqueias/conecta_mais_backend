@@ -1,4 +1,5 @@
-import { IDeleteUserRepository } from "../../interfaces/user/repositories/index.js";
+import { IDeleteUserRepository } from "@interfaces/user/repositories/index.js";
+
 import { prisma } from "../../lib/db.js";
 
 export class DeleteUserRepository implements IDeleteUserRepository {

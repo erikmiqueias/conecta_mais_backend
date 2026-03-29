@@ -1,12 +1,11 @@
-import bcrypt from "bcryptjs";
-
-import { InputCreateUserDTO } from "../../dtos/user.dto.js";
-import { EmailAlreadyExistsError } from "../../errors/errors.js";
+import { InputCreateUserDTO } from "@dtos/user.dto.js";
+import { EmailAlreadyExistsError } from "@errors/errors.js";
 import {
   ICreateUserRepository,
   IGetUserByEmailRepository,
-} from "../../interfaces/user/repositories/index.js";
-import { ICreateUserUseCase } from "../../interfaces/user/usecases/index.js";
+} from "@interfaces/user/repositories/index.js";
+import { ICreateUserUseCase } from "@interfaces/user/usecases/index.js";
+import bcrypt from "bcryptjs";
 
 export class CreateUserUseCase implements ICreateUserUseCase {
   constructor(

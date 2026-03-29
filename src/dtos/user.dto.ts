@@ -20,5 +20,3 @@ export type InputUpdateUserDTO = Omit<
   "role"
 >;
 export type OutputUpdateUserDTO = z.infer<typeof UpdateUserOutputSchema>;
-
-console.log();

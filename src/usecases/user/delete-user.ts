@@ -1,9 +1,9 @@
-import { UserNotFoundError } from "../../errors/errors.js";
+import { UserNotFoundError } from "@errors/errors.js";
 import {
   IDeleteUserRepository,
   IGetUserByIdRepository,
-} from "../../interfaces/user/repositories/index.js";
-import { IDeleteUserUseCase } from "../../interfaces/user/usecases/index.js";
+} from "@interfaces/user/repositories/index.js";
+import { IDeleteUserUseCase } from "@interfaces/user/usecases/index.js";
 
 export class DeleteUserUseCase implements IDeleteUserUseCase {
   constructor(

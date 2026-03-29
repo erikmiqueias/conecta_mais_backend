@@ -1,7 +1,7 @@
-import { OutputGetUserByIdDTO } from "../../dtos/user.dto.js";
-import { UserNotFoundError } from "../../errors/errors.js";
-import { IGetUserByIdRepository } from "../../interfaces/user/repositories/index.js";
-import { IGetUserByIdUseCase } from "../../interfaces/user/usecases/index.js";
+import { OutputGetUserByIdDTO } from "@dtos/user.dto.js";
+import { UserNotFoundError } from "@errors/errors.js";
+import { IGetUserByIdRepository } from "@interfaces/user/repositories/index.js";
+import { IGetUserByIdUseCase } from "@interfaces/user/usecases/index.js";
 
 export class GetUserByIdUseCase implements IGetUserByIdUseCase {
   constructor(private readonly getUserByIdRepository: IGetUserByIdRepository) {}

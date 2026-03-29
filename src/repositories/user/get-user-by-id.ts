@@ -1,5 +1,6 @@
-import { OutputGetUserByIdDTO } from "../../dtos/user.dto.js";
-import { IGetUserByIdRepository } from "../../interfaces/user/repositories/index.js";
+import { OutputGetUserByIdDTO } from "@dtos/user.dto.js";
+import { IGetUserByIdRepository } from "@interfaces/user/repositories/index.js";
+
 import { prisma } from "../../lib/db.js";
 
 export class GetUserByIdRepository implements IGetUserByIdRepository {

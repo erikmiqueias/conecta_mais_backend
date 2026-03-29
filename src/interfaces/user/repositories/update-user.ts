@@ -1,7 +1,4 @@
-import {
-  InputUpdateUserDTO,
-  OutputUpdateUserDTO,
-} from "../../../dtos/user.dto.js";
+import { InputUpdateUserDTO, OutputUpdateUserDTO } from "@dtos/user.dto.js";
 
 export interface IUpdateUserRepository {
   execute(

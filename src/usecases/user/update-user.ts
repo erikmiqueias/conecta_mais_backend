@@ -1,16 +1,10 @@
-import {
-  InputUpdateUserDTO,
-  OutputUpdateUserDTO,
-} from "../../dtos/user.dto.js";
-import {
-  EmailAlreadyExistsError,
-  UserNotFoundError,
-} from "../../errors/errors.js";
+import { InputUpdateUserDTO, OutputUpdateUserDTO } from "@dtos/user.dto.js";
+import { EmailAlreadyExistsError, UserNotFoundError } from "@errors/errors.js";
 import {
   IGetUserByIdRepository,
   IUpdateUserRepository,
-} from "../../interfaces/user/repositories/index.js";
-import { IUpdateUserUseCase } from "../../interfaces/user/usecases/index.js";
+} from "@interfaces/user/repositories/index.js";
+import { IUpdateUserUseCase } from "@interfaces/user/usecases/index.js";
 
 export class UpdateUserUseCase implements IUpdateUserUseCase {
   constructor(
