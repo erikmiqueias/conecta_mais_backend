@@ -10,6 +10,7 @@ import { CreateUserRepository } from "../repositories/user/create-user.js";
 import { DeleteUserRepository } from "../repositories/user/delete-user.js";
 import { GetUserByEmailRepository } from "../repositories/user/get-user-by-email.js";
 import { GetUserByIdRepository } from "../repositories/user/get-user-by-id.js";
+import { UpdateUserRepository } from "../repositories/user/update-user.js";
 import { ErrorSchema } from "../schemas/error.schema.js";
 import {
   CreateUserInputSchema,
@@ -18,6 +19,7 @@ import {
 import { CreateUserUseCase } from "../usecases/user/create-user.js";
 import { DeleteUserUseCase } from "../usecases/user/delete-user.js";
 import { GetUserByIdUseCase } from "../usecases/user/get-user-by-id.js";
+import { UpdateUserUseCase } from "../usecases/user/update-user.js";
 
 export const userRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -171,6 +173,91 @@ export const userRoutes = (app: FastifyInstance) => {
           });
         }
 
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PUT",
+    url: "/user/:userId",
+    onRequest: app.authenticate,
+    schema: {
+      security: [{ bearerAuth: [] }],
+      params: z.object({
+        userId: z.uuid({ error: "Invalid UUId" }),
+      }),
+      body: z.object({
+        data: z.object({
+          username: z.string().optional(),
+          email: z
+            .email({
+              error: "Invalid email address",
+            })
+            .optional(),
+        }),
+      }),
+      response: {
+        200: UserOutputSchema.omit({ createdAt: true }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { userId } = request.params;
+      if (userId !== request.user.sub) {
+        return reply.status(401).send({
+          message: "Unauthorized",
+          code: "UNAUTHORIZED",
+        });
+      }
+      const { data } = request.body;
+
+      const getUserByEmailRepository = new GetUserByEmailRepository();
+      const getUserByIdRepository = new GetUserByIdRepository();
+      const updateUserRepository = new UpdateUserRepository();
+      const updateUserUseCase = new UpdateUserUseCase(
+        updateUserRepository,
+        getUserByIdRepository,
+        getUserByEmailRepository,
+      );
+      try {
+        const invalidFields = Object.keys(data).some(
+          (key) => !["email", "username"].includes(key),
+        );
+
+        if (invalidFields) {
+          return reply.status(400).send({
+            message: "Invalid fields in request body",
+            code: "INVALID_FIELDS",
+          });
+        }
+
+        const updatedUser = await updateUserUseCase.execute(userId, {
+          username: data.username!,
+          email: data.email!,
+        });
+
+        return reply.status(200).send(updatedUser!);
+      } catch (error) {
+        if (error instanceof UserNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "NOT_FOUND",
+          });
+        }
+        if (error instanceof EmailAlreadyExistsError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "EMAIL_ALREADY_EXISTS",
+          });
+        }
         const errorMessage =
           error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({
