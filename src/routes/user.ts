@@ -228,17 +228,6 @@ export const userRoutes = (app: FastifyInstance) => {
         getUserByEmailRepository,
       );
       try {
-        const invalidFields = Object.keys(data).some(
-          (key) => !["email", "username"].includes(key),
-        );
-
-        if (invalidFields) {
-          return reply.status(400).send({
-            message: "Invalid fields in request body",
-            code: "INVALID_FIELDS",
-          });
-        }
-
         const updatedUser = await updateUserUseCase.execute(userId, {
           username: data.username!,
           email: data.email!,
