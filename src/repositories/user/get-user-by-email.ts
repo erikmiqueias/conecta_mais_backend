@@ -1,5 +1,5 @@
 import { OutputGetUserByEmailDTO } from "../../dtos/user.dto.js";
-import { IGetUserByEmailRepository } from "../../interfaces/user/repositories/get-user-by-email.js";
+import { IGetUserByEmailRepository } from "../../interfaces/user/repositories/index.js";
 import { prisma } from "../../lib/db.js";
 
 export class GetUserByEmailRepository implements IGetUserByEmailRepository {

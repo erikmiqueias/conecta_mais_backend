@@ -2,14 +2,16 @@ import bcrypt from "bcryptjs";
 
 import { InputCreateUserDTO } from "../../dtos/user.dto.js";
 import { EmailAlreadyExistsError } from "../../errors/errors.js";
-import { ICreateUserRepository } from "../../interfaces/user/repositories/create-user.js";
-import { ICreateUserUseCase } from "../../interfaces/user/usecases/create-user.js";
-import { GetUserByEmailRepository } from "../../repositories/user/get-user-by-email.js";
+import {
+  ICreateUserRepository,
+  IGetUserByEmailRepository,
+} from "../../interfaces/user/repositories/index.js";
+import { ICreateUserUseCase } from "../../interfaces/user/usecases/index.js";
 
 export class CreateUserUseCase implements ICreateUserUseCase {
   constructor(
     private readonly createUserRepository: ICreateUserRepository,
-    private readonly getUserByEmailRepository: GetUserByEmailRepository,
+    private readonly getUserByEmailRepository: IGetUserByEmailRepository,
   ) {}
   async execute(data: InputCreateUserDTO) {
     const emailAlreadyExists = await this.getUserByEmailRepository.execute(

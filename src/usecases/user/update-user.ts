@@ -6,9 +6,11 @@ import {
   EmailAlreadyExistsError,
   UserNotFoundError,
 } from "../../errors/errors.js";
-import { IGetUserByIdRepository } from "../../interfaces/user/repositories/get-user-by-id.js";
-import { IUpdateUserRepository } from "../../interfaces/user/repositories/update-user.js";
-import { IUpdateUserUseCase } from "../../interfaces/user/usecases/update-user.js";
+import {
+  IGetUserByIdRepository,
+  IUpdateUserRepository,
+} from "../../interfaces/user/repositories/index.js";
+import { IUpdateUserUseCase } from "../../interfaces/user/usecases/index.js";
 
 export class UpdateUserUseCase implements IUpdateUserUseCase {
   constructor(

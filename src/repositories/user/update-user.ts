@@ -2,7 +2,7 @@ import {
   InputUpdateUserDTO,
   OutputUpdateUserDTO,
 } from "../../dtos/user.dto.js";
-import { IUpdateUserRepository } from "../../interfaces/user/repositories/update-user.js";
+import { IUpdateUserRepository } from "../../interfaces/user/repositories/index.js";
 import { prisma } from "../../lib/db.js";
 
 export class UpdateUserRepository implements IUpdateUserRepository {
