@@ -10,11 +10,11 @@
     "skipLibCheck": true,
     "moduleDetection": "force",
     "paths": {
-      "@interfaces/*": ["./src/interfaces/*"],
-      "@repositories/*": ["./src/repositories/*"],
-      "@usecases/*": ["./src/usecases/*"],
-      "@dtos/*": ["./src/dtos/*"],
-      "@errors/*": ["./src/errors/*"]
+      "@modules/*": ["./src/modules/*"],
+      "@schemas/*": ["./src/schemas/*"],
+      "@infra/*": ["./src/infra/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@generated/*": ["./src/generated/*"]
     }
   },
   "include": ["src"]

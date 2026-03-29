@@ -1,6 +1,5 @@
+import { UserSchema } from "@modules/user/schemas/user.schema.js";
 import { z } from "zod";
-
-import { UserSchema } from "./user.schema.js";
 
 export const AuthCoreSchema = {
   email: z.email({
