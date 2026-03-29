@@ -40,3 +40,14 @@ export const GetUserByEmailOutputSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
+
+export const UpdateUserInputSchema = z.object({
+  ...UserCoreSchema,
+});
+
+export const UpdateUserOutputSchema = z.object({
+  ...UserCoreSchema,
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
