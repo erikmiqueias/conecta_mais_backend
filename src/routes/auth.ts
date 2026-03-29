@@ -12,6 +12,7 @@ export const authRoutes = (app: FastifyInstance) => {
     method: "POST",
     url: "/user/auth/login",
     schema: {
+      tags: ["Auth"],
       body: AuthSchema,
       response: {
         200: AuthOutputSchema,
@@ -89,6 +90,7 @@ export const authRoutes = (app: FastifyInstance) => {
     method: "POST",
     url: "/user/auth/refresh-token",
     schema: {
+      tags: ["Auth"],
       body: z.object({
         refreshToken: z.jwt({ error: "Invalid refresh token" }),
       }),

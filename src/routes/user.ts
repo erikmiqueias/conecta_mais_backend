@@ -26,6 +26,7 @@ export const userRoutes = (app: FastifyInstance) => {
     method: "POST",
     url: "/user/create",
     schema: {
+      tags: ["User"],
       body: CreateUserInputSchema,
       response: {
         201: UserOutputSchema,
@@ -72,6 +73,7 @@ export const userRoutes = (app: FastifyInstance) => {
     url: "/user/:userId",
     onRequest: app.authenticate,
     schema: {
+      tags: ["User"],
       security: [{ bearerAuth: [] }],
       params: z.object({
         userId: z.uuid({ error: "Invalid UUId" }),
@@ -134,6 +136,7 @@ export const userRoutes = (app: FastifyInstance) => {
     url: "/user/:userId",
     onRequest: app.authenticate,
     schema: {
+      tags: ["User"],
       security: [{ bearerAuth: [] }],
       params: z.object({
         userId: z.uuid({ error: "Invalid UUId" }),
@@ -187,6 +190,7 @@ export const userRoutes = (app: FastifyInstance) => {
     url: "/user/:userId",
     onRequest: app.authenticate,
     schema: {
+      tags: ["User"],
       security: [{ bearerAuth: [] }],
       params: z.object({
         userId: z.uuid({ error: "Invalid UUId" }),

@@ -66,41 +66,48 @@ app.decorate(
   },
 );
 
-app.register(fastifySwagger, {
-  openapi: {
-    info: {
-      title: "Conecta + Backend API",
-      description: "Servidor para a aplicação Conecta +",
-      version: "1.0.0",
-    },
-    servers: [
-      {
-        description: "Servidor de desenvolvimento",
-        url: `http://localhost:${process.env.PORT || 3000}`,
+if (process.env.NODE_ENV !== "production") {
+  app.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: "Conecta + Backend API",
+        description: "Servidor para a aplicação Conecta +",
+        version: "1.0.0",
       },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
+      servers: [
+        {
+          description: "Servidor de desenvolvimento",
+          url: `http://localhost:${process.env.PORT || 3000}`,
+        },
+      ],
+      tags: [
+        { name: "Auth", description: "Endpoints relacionados à autenticação" },
+        { name: "User", description: "Endpoints relacionados aos usuários" },
+        { name: "Event", description: "Endpoints relacionados aos eventos" },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
         },
       },
     },
-  },
-  transform: jsonSchemaTransform,
+    transform: jsonSchemaTransform,
 
-  // You can also create transform with custom skiplist of endpoints that should not be included in the specification:
-  //
-  // transform: createJsonSchemaTransform({
-  //   skipList: [ '/documentation/static/*' ]
-  // })
-});
+    // You can also create transform with custom skiplist of endpoints that should not be included in the specification:
+    //
+    // transform: createJsonSchemaTransform({
+    //   skipList: [ '/documentation/static/*' ]
+    // })
+  });
 
-await app.register(fastifySwaggerUI, {
-  routePrefix: "/docs",
-});
+  await app.register(fastifySwaggerUI, {
+    routePrefix: "/docs",
+  });
+}
 app.register(userRoutes);
 app.register(authRoutes);
 try {
