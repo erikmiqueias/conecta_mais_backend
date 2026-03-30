@@ -33,7 +33,7 @@ model Event {
   eventAddress  String
   latitude      Decimal   @db.Decimal(10, 7)
   longitude     Decimal   @db.Decimal(10, 7)
-  accessCode    String    @unique
+  accessCode    String?   @unique
   startDateTime DateTime  @db.Timestamptz()
   endDateTime   DateTime  @db.Timestamptz()
   createdAt     DateTime  @default(now()) @db.Timestamptz()
