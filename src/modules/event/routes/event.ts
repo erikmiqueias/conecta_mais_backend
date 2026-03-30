@@ -1,6 +1,11 @@
 import { GetUserByIdRepository } from "@modules/user/repositories/get-user-by-id.repo.js";
 import { ErrorSchema } from "@schemas/error.schema.js";
-import { UserNotFoundError } from "@shared/errors/errors.js";
+import {
+  AddressNotFoundError,
+  CoordinatesNotFoundError,
+  OSMProviderError,
+  UserNotFoundError,
+} from "@shared/errors/errors.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
@@ -34,6 +39,7 @@ export const eventRoutes = (app: FastifyInstance) => {
         403: ErrorSchema,
         404: ErrorSchema,
         500: ErrorSchema,
+        502: ErrorSchema,
       },
     },
     handler: async (request, reply) => {
@@ -69,6 +75,27 @@ export const eventRoutes = (app: FastifyInstance) => {
           return reply.status(404).send({
             message: "User not found",
             code: "USER_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof AddressNotFoundError) {
+          return reply.status(404).send({
+            message: "Address not found",
+            code: "ADDRESS_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof CoordinatesNotFoundError) {
+          return reply.status(404).send({
+            message: "Coordinates not found",
+            code: "COORDINATES_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof OSMProviderError) {
+          return reply.status(502).send({
+            message: "Error with geocoding service",
+            code: "GEOCODING_SERVICE_ERROR",
           });
         }
         const errorMessage =
