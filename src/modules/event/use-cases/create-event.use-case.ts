@@ -1,5 +1,6 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/get-user-by-id.interface.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
+import crypto from "crypto";
 
 import { IOSMProvider } from "../../../shared/interfaces/osm.interface.js";
 import {
@@ -40,6 +41,11 @@ export class CreateEventUseCase implements ICreateEventUseCase {
         data.longitude,
       );
       data.eventAddress = address;
+    }
+
+    if (data.eventType === "PRIVATE") {
+      const accessCode = crypto.randomBytes(6).toString("hex").toUpperCase();
+      data.accessCode = accessCode;
     }
 
     const eventData = {

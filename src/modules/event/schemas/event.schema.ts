@@ -15,22 +15,6 @@ const EventCoreSchema = {
   eventAddress: z.string().trim().min(1, {
     error: "Event address is required",
   }),
-  latitude: z
-    .number({
-      error: "Latitude must be a number",
-    })
-    .refine((value) => value >= -90 && value <= 90, {
-      error: "Latitude must be between -90 and 90",
-    })
-    .optional(),
-  longitude: z
-    .number({
-      error: "Longitude must be a number",
-    })
-    .refine((value) => value >= -180 && value <= 180, {
-      error: "Longitude must be between -180 and 180",
-    })
-    .optional(),
   startDateTime: z.coerce.date({
     error: "Start date and time must be a valid date",
   }),
@@ -57,6 +41,8 @@ export const EventSchema = z.object({
 
 export const CreateEventInputSchema = z.object({
   ...EventCoreSchema,
+  latitude: z.coerce.number().optional(),
+  longitude: z.coerce.number().optional(),
   accessCode: z
     .string()
     .trim()
@@ -69,6 +55,8 @@ export const CreateEventInputSchema = z.object({
 export const CreateEventOutputSchema = z.object({
   ...EventCoreSchema,
   id: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
   accessCode: z.string().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),

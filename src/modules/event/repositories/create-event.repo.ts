@@ -17,11 +17,12 @@ export class CreateEventRepository implements ICreateEventRepository {
         description: data.description,
         eventType: data.eventType,
         eventAddress: data.eventAddress,
-        latitude: data.latitude,
-        longitude: data.longitude,
         startDateTime: data.startDateTime,
+        latitude: data.latitude!,
+        longitude: data.longitude!,
         endDateTime: data.endDateTime,
         organizerId: userId,
+        accessCode: data.accessCode,
       },
     });
     return {
