@@ -6,12 +6,14 @@ import {
   OSMProviderError,
   UserNotFoundError,
 } from "@shared/errors/errors.js";
+import { verifyUserRole } from "@shared/middlewares/verify-user-role.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import { OpenStreetMapProvider } from "../../../shared/osm.provider.js";
 import { CreateEventRepository } from "../repositories/create-event.repo.js";
+import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
@@ -23,6 +25,7 @@ export const eventRoutes = (app: FastifyInstance) => {
     method: "POST",
     url: "/event/:userId/create",
     onRequest: app.authenticate,
+    preHandler: verifyUserRole("ORGANIZER"),
     schema: {
       tags: ["Event"],
       security: [{ bearerAuth: [] }],
@@ -103,6 +106,46 @@ export const eventRoutes = (app: FastifyInstance) => {
         return reply.status(500).send({
           message: errorMessage,
           code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "DELETE",
+    url: "/event/:eventId/delete",
+    onRequest: app.authenticate,
+    preHandler: verifyUserRole("ORGANIZER"),
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        200: z.object({
+          message: z.string(),
+          code: z.string(),
+        }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { eventId } = request.params;
+      const loggedUser = request.user.sub;
+
+      const getEventByIdRepository = new GetEventByIdRepository();
+      const isOwner = await getEventByIdRepository.execute(eventId);
+
+      if (loggedUser !== isOwner?.organizerId) {
+        return reply.status(403).send({
+          message: "Unauthorized",
+          code: "UNAUTHORIZED",
         });
       }
     },
