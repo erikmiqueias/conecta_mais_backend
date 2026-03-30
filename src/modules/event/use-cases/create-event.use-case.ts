@@ -1,6 +1,5 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/get-user-by-id.interface.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
-import crypto from "crypto";
 
 import { IOSMProvider } from "../../../shared/interfaces/osm.interface.js";
 import {
@@ -8,6 +7,7 @@ import {
   OutputCreateEventDTO,
 } from "../dtos/event.dto.js";
 import { ICreateEventRepository } from "../repositories/interfaces/create-event.interface.js";
+import { generateAccessCode } from "../utils/generate-access-code.js";
 import { ICreateEventUseCase } from "./interfaces/create-event.use-case.js";
 
 export class CreateEventUseCase implements ICreateEventUseCase {
@@ -44,7 +44,7 @@ export class CreateEventUseCase implements ICreateEventUseCase {
     }
 
     if (data.eventType === "PRIVATE") {
-      const accessCode = crypto.randomBytes(6).toString("hex").toUpperCase();
+      const accessCode = generateAccessCode(5);
       data.accessCode = accessCode;
     }
 
