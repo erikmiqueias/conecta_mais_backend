@@ -1,11 +1,11 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/get-user-by-id.interface.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
 
+import { IOSMProvider } from "../../../shared/interfaces/osm.interface.js";
 import {
   InputCreateEventDTO,
   OutputCreateEventDTO,
 } from "../dtos/event.dto.js";
-import { IOSMProvider } from "../providers/interfaces/osm.interface.js";
 import { ICreateEventRepository } from "../repositories/interfaces/create-event.interface.js";
 import { ICreateEventUseCase } from "./interfaces/create-event.use-case.js";
 

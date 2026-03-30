@@ -5,7 +5,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
-import { OpenStreetMapProvider } from "../providers/osm.provider.js";
+import { OpenStreetMapProvider } from "../../../shared/osm.provider.js";
 import { CreateEventRepository } from "../repositories/create-event.repo.js";
 import {
   CreateEventInputSchema,
