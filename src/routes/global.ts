@@ -1,7 +1,9 @@
 import { authRoutes } from "@modules/auth/routes/auth.js";
+import { eventRoutes } from "@modules/event/routes/event.js";
 import { userRoutes } from "@modules/user/routes/user.js";
-import { FastifyApp } from "@shared/@types/fastify-app.js";
-export const registerRoutes = (app: FastifyApp) => {
+import { FastifyInstance } from "fastify";
+export const registerRoutes = (app: FastifyInstance) => {
   app.register(userRoutes);
   app.register(authRoutes);
+  app.register(eventRoutes);
 };
