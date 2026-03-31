@@ -47,9 +47,10 @@ export const fastifySetupConfig = async (app: FastifyInstance) => {
       try {
         await request.jwtVerify();
         if (request.user.role !== "ORGANIZER") {
-          return reply
-            .status(403)
-            .send({ message: "Forbidden", code: "FORBIDDEN" });
+          return reply.status(403).send({
+            message: "Only organizers can access this resource",
+            code: "FORBIDDEN",
+          });
         }
       } catch (error) {
         app.log.error(error);

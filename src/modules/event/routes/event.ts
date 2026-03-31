@@ -8,7 +8,6 @@ import {
   UserNotFoundError,
 } from "@shared/errors/errors.js";
 import { verifyOptionalJwt } from "@shared/middlewares/verify-optional-jwt.js";
-import { verifyUserRole } from "@shared/middlewares/verify-user-role.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
@@ -33,18 +32,16 @@ import { GetOrganizerEventsUseCase } from "../use-cases/get-organizer-events.use
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/event/:userId/create",
-    onRequest: app.authenticate,
-    preHandler: verifyUserRole("ORGANIZER"),
+    url: "/event/me/create",
+    onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       tags: ["Event"],
       security: [{ bearerAuth: [] }],
-      params: z.object({
-        userId: z.uuid({
-          error: "User ID must be a valid UUID",
-        }),
+      body: CreateEventInputSchema.omit({
+        latitude: true,
+        longitude: true,
+        accessCode: true,
       }),
-      body: CreateEventInputSchema,
       response: {
         201: CreateEventOutputSchema,
         400: ErrorSchema,
@@ -56,21 +53,7 @@ export const eventRoutes = (app: FastifyInstance) => {
       },
     },
     handler: async (request, reply) => {
-      const { userId } = request.params;
-      const loggedUser = request.user.sub;
-      const loggedUserRole = request.user.role;
-      if (loggedUser !== userId) {
-        return reply.status(403).send({
-          message: "Unauthorized",
-          code: "UNAUTHORIZED",
-        });
-      }
-      if (loggedUserRole !== "ORGANIZER") {
-        return reply.status(403).send({
-          message: "Only organizers can create events",
-          code: "FORBIDDEN",
-        });
-      }
+      const userId = request.user.sub;
 
       try {
         const createEventRepository = new CreateEventRepository();
@@ -123,8 +106,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
     url: "/event/:eventId/delete",
-    onRequest: app.authenticate,
-    preHandler: verifyUserRole("ORGANIZER"),
+    onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       security: [{ bearerAuth: [] }],
       tags: ["Event"],
@@ -144,13 +126,13 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const { eventId } = request.params;
-      const loggedUser = request.user.sub;
+      const userId = request.user.sub;
 
       const getEventByIdRepository = new GetEventByIdRepository();
 
       const isOwner = await getEventByIdRepository.execute(eventId);
 
-      if (isOwner?.organizerId !== loggedUser) {
+      if (isOwner?.organizerId !== userId) {
         return reply.status(403).send({
           message: "Unauthorized",
           code: "UNAUTHORIZED",
@@ -182,17 +164,11 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/event/organizer/:organizerId",
-    onRequest: app.authenticate,
-    preHandler: verifyUserRole("ORGANIZER"),
+    url: "/event/me/events",
+    onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       security: [{ bearerAuth: [] }],
       tags: ["Event"],
-      params: z.object({
-        organizerId: z.uuid({
-          error: "Organizer ID must be a valid UUID",
-        }),
-      }),
       response: {
         200: GetOrganizerEventsOutputSchema,
         400: ErrorSchema,
@@ -203,14 +179,8 @@ export const eventRoutes = (app: FastifyInstance) => {
       },
     },
     handler: async (request, reply) => {
-      const { organizerId } = request.params;
-      const loggedUser = request.user.sub;
-      if (loggedUser !== organizerId) {
-        return reply.status(403).send({
-          message: "Unauthorized",
-          code: "UNAUTHORIZED",
-        });
-      }
+      const organizerId = request.user.sub;
+
       const getUserByIdRepository = new GetUserByIdRepository();
       const getOrganizerEventsRepository = new GetOrganizerEventsRepository();
       const getOrganizerEventsUseCase = new GetOrganizerEventsUseCase(
