@@ -1,11 +1,16 @@
-import { CreateUserRepository } from "../repositories/create-user.repo.js";
-import { DeleteUserRepository } from "../repositories/delete-user.repo.js";
-import { GetUserByEmailRepository } from "../repositories/get-user-by-email.repo.js";
-import { GetUserByIdRepository } from "../repositories/get-user-by-id.repo.js";
-import { UpdateUserRepository } from "../repositories/update-user.repo.js";
-import { CreateUserUseCase } from "../use-cases/create-user.use-case.js";
-import { DeleteUserUseCase } from "../use-cases/delete-user.use-case.js";
-import { GetUserByIdUseCase, UpdateUserUseCase } from "../use-cases/index.js";
+import {
+  CreateUserRepository,
+  DeleteUserRepository,
+  GetUserByEmailRepository,
+  GetUserByIdRepository,
+  UpdateUserRepository,
+} from "../repositories/index.js";
+import {
+  CreateUserUseCase,
+  DeleteUserUseCase,
+  GetUserByIdUseCase,
+  UpdateUserUseCase,
+} from "../use-cases/index.js";
 
 export const makeDeleteUserUseCase = () => {
   const deleteUserRepository = new DeleteUserRepository();
