@@ -7,6 +7,7 @@ import {
   OSMProviderError,
   UserNotFoundError,
 } from "@shared/errors/errors.js";
+import { verifyOptionalJwt } from "@shared/middlewares/verify-optional-jwt.js";
 import { verifyUserRole } from "@shared/middlewares/verify-user-role.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
@@ -15,15 +16,18 @@ import { z } from "zod";
 import { OpenStreetMapProvider } from "../../../shared/osm.provider.js";
 import { CreateEventRepository } from "../repositories/create-event.repo.js";
 import { DeleteEventRepository } from "../repositories/delete-event.repo.js";
+import { GetAvailableEventsRepository } from "../repositories/get-available-events.repo.js";
 import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
 import { GetOrganizerEventsRepository } from "../repositories/get-organizer-events.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
+  GetAvailableEventsOutputSchema,
   GetOrganizerEventsOutputSchema,
 } from "../schemas/event.schema.js";
 import { CreateEventUseCase } from "../use-cases/create-event.use-case.js";
 import { DeleteEventUseCase } from "../use-cases/delete-event.use-case.js";
+import { GetAvailableEventsUseCase } from "../use-cases/get-available-events.use-case.js";
 import { GetOrganizerEventsUseCase } from "../use-cases/get-organizer-events.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
@@ -215,6 +219,48 @@ export const eventRoutes = (app: FastifyInstance) => {
       );
       try {
         const events = await getOrganizerEventsUseCase.execute(organizerId);
+        return reply.status(200).send(events);
+      } catch (error) {
+        if (error instanceof UserNotFoundError) {
+          return reply.status(404).send({
+            message: "User not found",
+            code: "USER_NOT_FOUND",
+          });
+        }
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/events/available",
+    preHandler: verifyOptionalJwt,
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      response: {
+        200: GetAvailableEventsOutputSchema,
+        400: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const loggedUser = request.user?.sub || undefined;
+      const getUserByIdRepository = new GetUserByIdRepository();
+      const getAvailableEventsRepository = new GetAvailableEventsRepository();
+      const getAvailableEventsUseCase = new GetAvailableEventsUseCase(
+        getAvailableEventsRepository,
+        getUserByIdRepository,
+      );
+
+      try {
+        const events = await getAvailableEventsUseCase.execute(loggedUser);
         return reply.status(200).send(events);
       } catch (error) {
         if (error instanceof UserNotFoundError) {
