@@ -74,6 +74,8 @@ export const GetOrganizerEventsOutputSchema = z.array(
 export const GetAvailableEventsOutputSchema = z.array(
   z.object({
     ...EventCoreSchema,
+    longitude: z.number(),
+    latitude: z.number(),
     id: z.string(),
     organizer: z.object({
       id: z.string(),

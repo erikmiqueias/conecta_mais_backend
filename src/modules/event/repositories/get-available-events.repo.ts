@@ -24,6 +24,12 @@ export class GetAvailableEventsRepository implements IGetAvailableEventsReposito
         startDateTime: "asc",
       },
     });
-    return events;
+
+    const formattedEvents = events.map((event) => ({
+      ...event,
+      latitude: event.latitude.toNumber(),
+      longitude: event.longitude.toNumber(),
+    }));
+    return formattedEvents;
   }
 }
