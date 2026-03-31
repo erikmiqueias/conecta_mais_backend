@@ -8,7 +8,7 @@ import {
 } from "../dtos/event.dto.js";
 import { ICreateEventRepository } from "../repositories/interfaces/create-event.interface.js";
 import { generateAccessCode } from "../utils/generate-access-code.js";
-import { ICreateEventUseCase } from "./interfaces/create-event.use-case.js";
+import { ICreateEventUseCase } from "./interfaces/create-event.interface.js";
 
 export class CreateEventUseCase implements ICreateEventUseCase {
   constructor(
