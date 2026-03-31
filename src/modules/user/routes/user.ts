@@ -8,22 +8,15 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import {
-  CreateUserRepository,
-  DeleteUserRepository,
-  GetUserByEmailRepository,
-  GetUserByIdRepository,
-  UpdateUserRepository,
-} from "../repositories/index.js";
+  makeCreateUserUseCase,
+  makeDeleteUserUseCase,
+  makeGetUserByIdUseCase,
+  makeUpdateUserUseCase,
+} from "../factories/user.factory.js";
 import {
   CreateUserInputSchema,
   UserOutputSchema,
 } from "../schemas/user.schema.js";
-import {
-  CreateUserUseCase,
-  DeleteUserUseCase,
-  GetUserByIdUseCase,
-  UpdateUserUseCase,
-} from "../use-cases/index.js";
 
 export const userRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -40,12 +33,7 @@ export const userRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const { email, password, role, username } = request.body;
-      const getUserByEmailRepository = new GetUserByEmailRepository();
-      const createUserRepository = new CreateUserRepository();
-      const createUserUseCase = new CreateUserUseCase(
-        createUserRepository,
-        getUserByEmailRepository,
-      );
+      const createUserUseCase = makeCreateUserUseCase();
       try {
         const user = await createUserUseCase.execute({
           email,
@@ -89,13 +77,7 @@ export const userRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const userId = request.user.sub;
-      const deleteUserRepository = new DeleteUserRepository();
-      const getUserByIdRepository = new GetUserByIdRepository();
-      const deleteUserUseCase = new DeleteUserUseCase(
-        getUserByIdRepository,
-        deleteUserRepository,
-      );
-
+      const deleteUserUseCase = makeDeleteUserUseCase();
       try {
         await deleteUserUseCase.execute(userId);
 
@@ -118,14 +100,11 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/user/:userId",
+    url: "/user/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
       security: [{ bearerAuth: [] }],
-      params: z.object({
-        userId: z.uuid({ error: "Invalid UUId" }),
-      }),
       response: {
         200: UserOutputSchema,
         400: ErrorSchema,
@@ -135,19 +114,8 @@ export const userRoutes = (app: FastifyInstance) => {
       },
     },
     handler: async (request, reply) => {
-      const { userId } = request.params;
-
-      const loggedInUser = request.user.sub;
-
-      if (loggedInUser !== userId) {
-        return reply.status(401).send({
-          message: "Unauthorized",
-          code: "UNAUTHORIZED",
-        });
-      }
-
-      const getUserByIdRepository = new GetUserByIdRepository();
-      const getUserByIdUseCase = new GetUserByIdUseCase(getUserByIdRepository);
+      const userId = request.user.sub;
+      const getUserByIdUseCase = makeGetUserByIdUseCase();
 
       try {
         const user = await getUserByIdUseCase.execute(userId);
@@ -172,14 +140,11 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "PUT",
-    url: "/user/:userId",
+    url: "/user/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
       security: [{ bearerAuth: [] }],
-      params: z.object({
-        userId: z.uuid({ error: "Invalid UUId" }),
-      }),
       body: z.object({
         data: z.object({
           username: z.string().optional(),
@@ -199,23 +164,10 @@ export const userRoutes = (app: FastifyInstance) => {
       },
     },
     handler: async (request, reply) => {
-      const { userId } = request.params;
-      if (userId !== request.user.sub) {
-        return reply.status(401).send({
-          message: "Unauthorized",
-          code: "UNAUTHORIZED",
-        });
-      }
+      const userId = request.user.sub;
       const { data } = request.body;
+      const updateUserUseCase = makeUpdateUserUseCase();
 
-      const getUserByEmailRepository = new GetUserByEmailRepository();
-      const getUserByIdRepository = new GetUserByIdRepository();
-      const updateUserRepository = new UpdateUserRepository();
-      const updateUserUseCase = new UpdateUserUseCase(
-        updateUserRepository,
-        getUserByIdRepository,
-        getUserByEmailRepository,
-      );
       try {
         const updatedUser = await updateUserUseCase.execute(userId, {
           username: data.username!,
