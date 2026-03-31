@@ -15,6 +15,7 @@ export class UpdateUserRepository implements IUpdateUserRepository {
       },
       where: {
         id: userId,
+        deletedAt: null,
       },
     });
     return user;

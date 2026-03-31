@@ -8,6 +8,7 @@ export class GetUserByIdRepository implements IGetUserByIdRepository {
     const user = await prisma.user.findFirst({
       where: {
         id: userId,
+        deletedAt: null,
       },
     });
 

@@ -8,6 +8,7 @@ export class GetUserByEmailRepository implements IGetUserByEmailRepository {
     const user = await prisma.user.findFirst({
       where: {
         email,
+        deletedAt: null,
       },
     });
 

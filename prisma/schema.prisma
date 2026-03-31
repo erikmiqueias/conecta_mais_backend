@@ -20,6 +20,7 @@ model User {
   role               Role                @default(USER)
   createdAt          DateTime            @default(now()) @db.Timestamptz()
   updatedAt          DateTime            @updatedAt @db.Timestamptz()
+  deletedAt          DateTime?           @db.Timestamptz()
   events             Event[]
   eventSubscriptions EventSubscription[]
   eventReviews       EventReview[]
