@@ -10,6 +10,12 @@ export class UserNotFoundError extends Error {
   }
 }
 
+export class EventNotFoundError extends Error {
+  constructor() {
+    super("Event not found");
+  }
+}
+
 export class AddressNotFoundError extends Error {
   constructor() {
     super("Address not found for the given coordinates");

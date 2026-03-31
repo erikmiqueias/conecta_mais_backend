@@ -3,6 +3,7 @@ import { ErrorSchema } from "@schemas/error.schema.js";
 import {
   AddressNotFoundError,
   CoordinatesNotFoundError,
+  EventNotFoundError,
   OSMProviderError,
   UserNotFoundError,
 } from "@shared/errors/errors.js";
@@ -13,12 +14,14 @@ import { z } from "zod";
 
 import { OpenStreetMapProvider } from "../../../shared/osm.provider.js";
 import { CreateEventRepository } from "../repositories/create-event.repo.js";
+import { DeleteEventRepository } from "../repositories/delete-event.repo.js";
 import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
 } from "../schemas/event.schema.js";
 import { CreateEventUseCase } from "../use-cases/create-event.use-case.js";
+import { DeleteEventUseCase } from "../use-cases/delete-event.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -124,10 +127,7 @@ export const eventRoutes = (app: FastifyInstance) => {
         }),
       }),
       response: {
-        200: z.object({
-          message: z.string(),
-          code: z.string(),
-        }),
+        204: z.null(),
         400: ErrorSchema,
         401: ErrorSchema,
         403: ErrorSchema,
@@ -140,12 +140,35 @@ export const eventRoutes = (app: FastifyInstance) => {
       const loggedUser = request.user.sub;
 
       const getEventByIdRepository = new GetEventByIdRepository();
+
       const isOwner = await getEventByIdRepository.execute(eventId);
 
-      if (loggedUser !== isOwner?.organizerId) {
+      if (isOwner?.organizerId !== loggedUser) {
         return reply.status(403).send({
           message: "Unauthorized",
           code: "UNAUTHORIZED",
+        });
+      }
+      const deleteEventRepository = new DeleteEventRepository();
+      const deleteEventUseCase = new DeleteEventUseCase(
+        getEventByIdRepository,
+        deleteEventRepository,
+      );
+      try {
+        await deleteEventUseCase.execute(eventId);
+        return reply.status(204).send(null);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: "Event not found",
+            code: "NOT_FOUND",
+          });
+        }
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
         });
       }
     },

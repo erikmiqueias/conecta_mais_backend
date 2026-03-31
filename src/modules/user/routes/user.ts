@@ -83,10 +83,7 @@ export const userRoutes = (app: FastifyInstance) => {
         userId: z.uuid({ error: "Invalid UUId" }),
       }),
       response: {
-        200: z.object({
-          message: z.string(),
-          code: z.string(),
-        }),
+        204: z.null(),
         400: ErrorSchema,
         401: ErrorSchema,
         404: ErrorSchema,
@@ -113,12 +110,9 @@ export const userRoutes = (app: FastifyInstance) => {
       );
 
       try {
-        const deletedUser = await deleteUserUseCase.execute(userId);
+        await deleteUserUseCase.execute(userId);
 
-        return reply.status(200).send({
-          message: deletedUser ? "User deleted" : "An error occurred",
-          code: "OK",
-        });
+        return reply.status(204).send(null);
       } catch (error) {
         if (error instanceof UserNotFoundError) {
           return reply.status(404).send({
