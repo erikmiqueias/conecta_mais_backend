@@ -6,6 +6,6 @@ import {
 export interface ICreateEventUseCase {
   execute(
     data: InputCreateEventDTO,
-    userId: string,
+    organizerId: string,
   ): Promise<OutputCreateEventDTO>;
 }

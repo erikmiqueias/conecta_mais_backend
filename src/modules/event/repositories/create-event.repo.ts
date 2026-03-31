@@ -9,7 +9,7 @@ import { ICreateEventRepository } from "./interfaces/create-event.interface.js";
 export class CreateEventRepository implements ICreateEventRepository {
   async execute(
     data: InputCreateEventDTO,
-    userId: string,
+    organizerId: string,
   ): Promise<OutputCreateEventDTO> {
     const event = await prisma.event.create({
       data: {
@@ -21,7 +21,7 @@ export class CreateEventRepository implements ICreateEventRepository {
         latitude: data.latitude!,
         longitude: data.longitude!,
         endDateTime: data.endDateTime,
-        organizerId: userId,
+        organizerId: organizerId,
         accessCode: data.accessCode,
       },
     });

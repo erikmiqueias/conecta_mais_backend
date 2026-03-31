@@ -16,12 +16,15 @@ import { OpenStreetMapProvider } from "../../../shared/osm.provider.js";
 import { CreateEventRepository } from "../repositories/create-event.repo.js";
 import { DeleteEventRepository } from "../repositories/delete-event.repo.js";
 import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
+import { GetOrganizerEventsRepository } from "../repositories/get-organizer-events.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
+  GetOrganizerEventsOutputSchema,
 } from "../schemas/event.schema.js";
 import { CreateEventUseCase } from "../use-cases/create-event.use-case.js";
 import { DeleteEventUseCase } from "../use-cases/delete-event.use-case.js";
+import { GetOrganizerEventsUseCase } from "../use-cases/get-organizer-events.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -162,6 +165,62 @@ export const eventRoutes = (app: FastifyInstance) => {
           return reply.status(404).send({
             message: "Event not found",
             code: "NOT_FOUND",
+          });
+        }
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/event/organizer/:organizerId",
+    onRequest: app.authenticate,
+    preHandler: verifyUserRole("ORGANIZER"),
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        organizerId: z.uuid({
+          error: "Organizer ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        200: GetOrganizerEventsOutputSchema,
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        403: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { organizerId } = request.params;
+      const loggedUser = request.user.sub;
+      if (loggedUser !== organizerId) {
+        return reply.status(403).send({
+          message: "Unauthorized",
+          code: "UNAUTHORIZED",
+        });
+      }
+      const getUserByIdRepository = new GetUserByIdRepository();
+      const getOrganizerEventsRepository = new GetOrganizerEventsRepository();
+      const getOrganizerEventsUseCase = new GetOrganizerEventsUseCase(
+        getOrganizerEventsRepository,
+        getUserByIdRepository,
+      );
+      try {
+        const events = await getOrganizerEventsUseCase.execute(organizerId);
+        return reply.status(200).send(events);
+      } catch (error) {
+        if (error instanceof UserNotFoundError) {
+          return reply.status(404).send({
+            message: "User not found",
+            code: "USER_NOT_FOUND",
           });
         }
         const errorMessage =

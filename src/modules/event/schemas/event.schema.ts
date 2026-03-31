@@ -63,3 +63,10 @@ export const CreateEventOutputSchema = z.object({
   deletedAt: z.date().nullable(),
   organizerId: z.string(),
 });
+
+export const GetOrganizerEventsOutputSchema = z.array(
+  z.object({
+    ...EventCoreSchema,
+    id: z.string(),
+  }),
+);

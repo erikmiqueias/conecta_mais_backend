@@ -1,3 +1,3 @@
 export interface IDeleteEventUseCase {
-  execute(eventId: string): Promise<boolean>;
+  execute(organizerId: string): Promise<boolean>;
 }
