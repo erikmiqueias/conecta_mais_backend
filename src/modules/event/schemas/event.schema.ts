@@ -70,3 +70,14 @@ export const GetOrganizerEventsOutputSchema = z.array(
     id: z.string(),
   }),
 );
+
+export const GetAvailableEventsOutputSchema = z.array(
+  z.object({
+    ...EventCoreSchema,
+    id: z.string(),
+    organizer: z.object({
+      id: z.string(),
+      username: z.string(),
+    }),
+  }),
+);
