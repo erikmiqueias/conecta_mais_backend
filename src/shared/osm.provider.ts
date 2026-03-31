@@ -4,7 +4,7 @@ import {
   OSMProviderError,
 } from "@shared/errors/errors.js";
 
-import { IOSMProvider } from "./interfaces/osm.interface.js";
+import { IOSMProvider } from "./middlewares/interfaces/osm.interface.js";
 
 interface NominatimResponse {
   lat: string;
