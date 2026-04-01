@@ -21,7 +21,7 @@ import {
 export const userRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/user/create",
+    url: "/users",
     schema: {
       tags: ["User"],
       body: CreateUserInputSchema,
@@ -62,7 +62,7 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
-    url: "/user/me",
+    url: "/users/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
@@ -100,7 +100,7 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/user/me",
+    url: "/users/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
@@ -140,7 +140,7 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "PUT",
-    url: "/user/me",
+    url: "/users/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],

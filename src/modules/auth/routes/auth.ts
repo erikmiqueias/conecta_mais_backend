@@ -10,7 +10,7 @@ import z from "zod";
 export const authRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/user/auth/login",
+    url: "/auth/login",
     schema: {
       tags: ["Auth"],
       body: AuthSchema,
@@ -88,7 +88,7 @@ export const authRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/user/auth/refresh-token",
+    url: "/auth/refresh",
     schema: {
       tags: ["Auth"],
       body: z.object({

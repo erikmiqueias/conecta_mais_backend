@@ -32,7 +32,7 @@ import { GetOrganizerEventsUseCase } from "../use-cases/get-organizer-events.use
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/event/me/create",
+    url: "/me/events",
     onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       tags: ["Event"],
@@ -105,7 +105,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
-    url: "/event/:eventId/delete",
+    url: "/me/events/:eventId",
     onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       security: [{ bearerAuth: [] }],
@@ -164,7 +164,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/event/me/events",
+    url: "/me/events",
     onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       security: [{ bearerAuth: [] }],
@@ -208,7 +208,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/events/available",
+    url: "/events",
     preHandler: verifyOptionalJwt,
     schema: {
       security: [{ bearerAuth: [] }],
