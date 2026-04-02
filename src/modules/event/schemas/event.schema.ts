@@ -83,3 +83,27 @@ export const GetAvailableEventsOutputSchema = z.array(
     }),
   }),
 );
+
+export const UpdateEventInputSchema = z.object({
+  name: EventCoreSchema.name.optional(),
+  description: EventCoreSchema.description.optional(),
+  eventType: EventCoreSchema.eventType.optional(),
+  eventAddress: EventCoreSchema.eventAddress.optional(),
+  startDateTime: EventCoreSchema.startDateTime.optional(),
+  endDateTime: EventCoreSchema.endDateTime.optional(),
+  latitude: z.coerce.number().optional(),
+  longitude: z.coerce.number().optional(),
+  accessCode: z.string().optional(),
+});
+
+export const UpdateEventOutputSchema = z.object({
+  ...EventCoreSchema,
+  id: z.string(),
+  latitude: z.number(),
+  longitude: z.number(),
+  accessCode: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().nullable(),
+  organizerId: z.string(),
+});
