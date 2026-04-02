@@ -1,7 +1,7 @@
 import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import fastifySwagger from "@fastify/swagger";
-import fastifySwaggerUI from "@fastify/swagger-ui";
+import fastifyApiReference from "@scalar/fastify-api-reference";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import {
   jsonSchemaTransform,
@@ -102,8 +102,12 @@ export const fastifySetupConfig = async (app: FastifyInstance) => {
       // })
     });
 
-    await app.register(fastifySwaggerUI, {
+    await app.register(fastifyApiReference, {
       routePrefix: "/docs",
+      openApiDocumentEndpoints: {
+        json: "/docs.json",
+        yaml: "/docs.yaml",
+      },
     });
   }
 };
