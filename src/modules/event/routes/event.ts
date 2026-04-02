@@ -3,6 +3,7 @@ import { ErrorSchema } from "@schemas/error.schema.js";
 import {
   AddressNotFoundError,
   CoordinatesNotFoundError,
+  EventNotAuthorizedError,
   EventNotFoundError,
   OSMProviderError,
   UserNotFoundError,
@@ -18,16 +19,19 @@ import { DeleteEventRepository } from "../repositories/delete-event.repo.js";
 import { GetAvailableEventsRepository } from "../repositories/get-available-events.repo.js";
 import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
 import { GetOrganizerEventsRepository } from "../repositories/get-organizer-events.repo.js";
+import { UpdateEventRepository } from "../repositories/update-event.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
   GetAvailableEventsOutputSchema,
   GetOrganizerEventsOutputSchema,
+  UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
 import { CreateEventUseCase } from "../use-cases/create-event.use-case.js";
 import { DeleteEventUseCase } from "../use-cases/delete-event.use-case.js";
 import { GetAvailableEventsUseCase } from "../use-cases/get-available-events.use-case.js";
 import { GetOrganizerEventsUseCase } from "../use-cases/get-organizer-events.use-case.js";
+import { UpdateEventUseCase } from "../use-cases/update-event.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -237,6 +241,69 @@ export const eventRoutes = (app: FastifyInstance) => {
           return reply.status(404).send({
             message: "User not found",
             code: "USER_NOT_FOUND",
+          });
+        }
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/me/events/:eventId",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      body: UpdateEventInputSchema,
+      response: {
+        200: UpdateEventInputSchema.omit({ accessCode: true }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        403: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { eventId } = request.params;
+      const userId = request.user.sub;
+
+      const getEventByIdRepository = new GetEventByIdRepository();
+      const updateEventRepository = new UpdateEventRepository();
+      const geoCoderProvider = new OpenStreetMapProvider();
+      const updateEventUseCase = new UpdateEventUseCase(
+        updateEventRepository,
+        getEventByIdRepository,
+        geoCoderProvider,
+      );
+      try {
+        const updatedEvent = await updateEventUseCase.execute(
+          eventId,
+          userId,
+          request.body,
+        );
+        return reply.status(200).send(updatedEvent);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: "Event not found",
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+        if (error instanceof EventNotAuthorizedError) {
+          return reply.status(403).send({
+            message: "User not authorized to update this event",
+            code: "EVENT_NOT_AUTHORIZED",
           });
         }
         const errorMessage =
