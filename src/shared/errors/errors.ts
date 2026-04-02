@@ -33,3 +33,9 @@ export class OSMProviderError extends Error {
     super(message);
   }
 }
+
+export class EventNotAuthorizedError extends Error {
+  constructor() {
+    super("User not authorized to perform this action on the event");
+  }
+}

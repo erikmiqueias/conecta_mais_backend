@@ -21,13 +21,13 @@ export class OpenStreetMapProvider implements IOSMProvider {
     try {
       const response = await fetch(url, {
         headers: {
-          "User-Agent": "ConectaPlus/1.0 (TCC)",
+          "User-Agent": "ConectaPlus/1.0 (TCC - erik.m@academico.ifrr.edu.br)",
         },
       });
 
       if (!response.ok) {
         throw new OSMProviderError(
-          `Failed to fetch coordinates: ${response.statusText}`,
+          `OSM API Error: Status ${response.status} - ${response.statusText}`,
         );
       }
 
@@ -42,7 +42,14 @@ export class OpenStreetMapProvider implements IOSMProvider {
         longitude: parseFloat(geoData[0].lon),
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "";
+      if (
+        error instanceof CoordinatesNotFoundError ||
+        error instanceof OSMProviderError
+      ) {
+        throw error;
+      }
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       throw new OSMProviderError(
         `Failed to fetch coordinates: ${errorMessage}`,
       );
