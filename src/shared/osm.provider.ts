@@ -21,7 +21,7 @@ export class OpenStreetMapProvider implements IOSMProvider {
     try {
       const response = await fetch(url, {
         headers: {
-          "User-Agent": "ConectaPlus/1.0 (TCC - erik.m@academico.ifrr.edu.br)",
+          "User-Agent": `${process.env.USER_AGENT}`,
         },
       });
 
