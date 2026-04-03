@@ -1,12 +1,12 @@
-import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/get-user-by-id.interface.js";
+import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/index.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
 
 import {
   InputGetOrganizerEventsDTO,
   OutputGetOrganizerEventsDTO,
 } from "../dtos/event.dto.js";
-import { IGetOrganizerEventsRepository } from "../repositories/interfaces/get-organizer-events.interface.js";
-import { IGetOrganizerEventsUseCase } from "./interfaces/get-organizer-events.interface.js";
+import { IGetOrganizerEventsRepository } from "../repositories/interfaces/index.js";
+import { IGetOrganizerEventsUseCase } from "./interfaces/index.js";
 
 export class GetOrganizerEventsUseCase implements IGetOrganizerEventsUseCase {
   constructor(

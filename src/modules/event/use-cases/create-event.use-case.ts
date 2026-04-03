@@ -1,20 +1,20 @@
-import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/get-user-by-id.interface.js";
+import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/index.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
-import { IOSMProvider } from "@shared/providers/interfaces/osm.interface.js";
+import { IGeocoderProvider } from "@shared/providers/interfaces/osm.interface.js";
 
 import {
   InputCreateEventDTO,
   OutputCreateEventDTO,
 } from "../dtos/event.dto.js";
-import { ICreateEventRepository } from "../repositories/interfaces/create-event.interface.js";
+import { ICreateEventRepository } from "../repositories/interfaces/index.js";
 import { generateAccessCode } from "../utils/generate-access-code.js";
-import { ICreateEventUseCase } from "./interfaces/create-event.interface.js";
+import { ICreateEventUseCase } from "./interfaces/index.js";
 
 export class CreateEventUseCase implements ICreateEventUseCase {
   constructor(
     private readonly createEventRepository: ICreateEventRepository,
     private readonly getUserByIdRepository: IGetUserByIdRepository,
-    private readonly geoCoderProvider: IOSMProvider,
+    private readonly geoCoderProvider: IGeocoderProvider,
   ) {}
 
   async execute(

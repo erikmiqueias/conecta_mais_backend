@@ -4,7 +4,7 @@ import {
   InputGetOrganizerEventsDTO,
   OutputGetOrganizerEventsDTO,
 } from "../dtos/event.dto.js";
-import { IGetOrganizerEventsRepository } from "./interfaces/get-organizer-events.interface.js";
+import { IGetOrganizerEventsRepository } from "./interfaces/index.js";
 
 export class GetOrganizerEventsRepository implements IGetOrganizerEventsRepository {
   async execute(

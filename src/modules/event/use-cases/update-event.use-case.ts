@@ -8,10 +8,12 @@ import {
   InputUpdateEventDTO,
   OutputUpdateEventDTO,
 } from "../dtos/event.dto.js";
-import { IGetEventByIdRepository } from "../repositories/interfaces/get-event-by-id.interface.js";
-import { IUpdateEventRepository } from "../repositories/interfaces/update-event.interface.js";
+import {
+  IGetEventByIdRepository,
+  IUpdateEventRepository,
+} from "../repositories/interfaces/index.js";
 import { generateAccessCode } from "../utils/generate-access-code.js";
-import { IUpdateEventUseCase } from "./interfaces/update-event.interface.js";
+import { IUpdateEventUseCase } from "./interfaces/index.js";
 
 export class UpdateEventUseCase implements IUpdateEventUseCase {
   constructor(

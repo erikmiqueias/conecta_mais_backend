@@ -4,7 +4,7 @@ import {
   InputCreateEventDTO,
   OutputCreateEventDTO,
 } from "../dtos/event.dto.js";
-import { ICreateEventRepository } from "./interfaces/create-event.interface.js";
+import { ICreateEventRepository } from "./interfaces/index.js";
 
 export class CreateEventRepository implements ICreateEventRepository {
   async execute(

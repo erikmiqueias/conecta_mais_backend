@@ -1,6 +1,6 @@
 import { prisma } from "@shared/lib/db.js";
 
-import { IDeleteEventRepository } from "./interfaces/delete-event.interface.js";
+import { IDeleteEventRepository } from "./interfaces/index.js";
 
 export class DeleteEventRepository implements IDeleteEventRepository {
   async execute(eventId: string): Promise<boolean> {

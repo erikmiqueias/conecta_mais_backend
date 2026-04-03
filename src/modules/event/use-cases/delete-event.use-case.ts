@@ -3,9 +3,11 @@ import {
   EventNotFoundError,
 } from "@shared/errors/errors.js";
 
-import { IDeleteEventRepository } from "../repositories/interfaces/delete-event.interface.js";
-import { IGetEventByIdRepository } from "../repositories/interfaces/get-event-by-id.interface.js";
-import { IDeleteEventUseCase } from "./interfaces/delete-event.interface.js";
+import {
+  IDeleteEventRepository,
+  IGetEventByIdRepository,
+} from "../repositories/interfaces/index.js";
+import { IDeleteEventUseCase } from "./interfaces/index.js";
 
 export class DeleteEventUseCase implements IDeleteEventUseCase {
   constructor(

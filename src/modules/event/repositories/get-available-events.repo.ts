@@ -1,7 +1,7 @@
 import { prisma } from "@shared/lib/db.js";
 
 import { OutputGetAvailableEventsDTO } from "../dtos/event.dto.js";
-import { IGetAvailableEventsRepository } from "./interfaces/get-available-events.interface.js";
+import { IGetAvailableEventsRepository } from "./interfaces/index.js";
 
 export class GetAvailableEventsRepository implements IGetAvailableEventsRepository {
   async execute(userId?: string): Promise<OutputGetAvailableEventsDTO> {

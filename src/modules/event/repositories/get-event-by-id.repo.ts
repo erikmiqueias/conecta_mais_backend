@@ -1,6 +1,6 @@
 import { prisma } from "@shared/lib/db.js";
 
-import { IGetEventByIdRepository } from "./interfaces/get-event-by-id.interface.js";
+import { IGetEventByIdRepository } from "./interfaces/index.js";
 
 export class GetEventByIdRepository implements IGetEventByIdRepository {
   async execute(

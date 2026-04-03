@@ -1,9 +1,9 @@
-import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/get-user-by-id.interface.js";
+import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/index.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
 
 import { OutputGetAvailableEventsDTO } from "../dtos/event.dto.js";
-import { IGetAvailableEventsRepository } from "../repositories/interfaces/get-available-events.interface.js";
-import { IGetAvailableEventsUseCase } from "./interfaces/get-available-events.interface.js";
+import { IGetAvailableEventsRepository } from "../repositories/interfaces/index.js";
+import { IGetAvailableEventsUseCase } from "./interfaces/index.js";
 
 export class GetAvailableEventsUseCase implements IGetAvailableEventsUseCase {
   constructor(

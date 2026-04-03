@@ -4,7 +4,7 @@ import {
   InputUpdateEventDTO,
   OutputUpdateEventDTO,
 } from "../dtos/event.dto.js";
-import { IUpdateEventRepository } from "./interfaces/update-event.interface.js";
+import { IUpdateEventRepository } from "./interfaces/index.js";
 
 export class UpdateEventRepository implements IUpdateEventRepository {
   async execute(
