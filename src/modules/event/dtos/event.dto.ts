@@ -4,6 +4,7 @@ import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
   GetAvailableEventsOutputSchema,
+  GetEventParticipantsOutputSchema,
   GetOrganizerEventsOutputSchema,
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
@@ -25,3 +26,7 @@ export type OutputEventSubscriptionDTO = {
   id: string;
   subscriptionDateTime: Date;
 };
+
+export type OutputGetEventParticipantsDTO = z.infer<
+  typeof GetEventParticipantsOutputSchema
+>;

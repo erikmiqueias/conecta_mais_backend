@@ -141,3 +141,15 @@ export const OutputEventSubscriptionSchema = z.object({
   }),
   subscriptionDateTime: z.coerce.date(),
 });
+
+export const GetEventParticipantsOutputSchema = z.array(
+  z.object({
+    id: z.uuid({
+      error: "User ID must be a valid UUID",
+    }),
+    subscriptionDateTime: z.coerce.date(),
+    user: z.object({
+      username: z.string(),
+    }),
+  }),
+);
