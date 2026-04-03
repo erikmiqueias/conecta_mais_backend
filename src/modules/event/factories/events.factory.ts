@@ -2,6 +2,10 @@ import { GetUserByIdRepository } from "@modules/user/repositories/index.js";
 import { OpenStreetMapProvider } from "@shared/providers/osm.provider.js";
 
 import {
+  EventSubscriptionRepository,
+  GetUserSubscribeRepository,
+} from "../repositories/index.js";
+import {
   CreateEventRepository,
   DeleteEventRepository,
   GetAvailableEventsRepository,
@@ -9,6 +13,7 @@ import {
   GetOrganizerEventsRepository,
   UpdateEventRepository,
 } from "../repositories/index.js";
+import { EventSubscriptionUseCase } from "../use-cases/event-subscription.use-case.js";
 import {
   CreateEventUseCase,
   DeleteEventUseCase,
@@ -69,4 +74,16 @@ export const makeUpdateEventUseCase = () => {
     geoCoderProvider,
   );
   return updateEventUseCase;
+};
+
+export const makeEventSubscriptionUseCase = () => {
+  const eventSubscriptionRepository = new EventSubscriptionRepository();
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const getUserSubscribeRepository = new GetUserSubscribeRepository();
+  const eventSubscriptionUseCase = new EventSubscriptionUseCase(
+    eventSubscriptionRepository,
+    getEventByIdRepository,
+    getUserSubscribeRepository,
+  );
+  return eventSubscriptionUseCase;
 };
