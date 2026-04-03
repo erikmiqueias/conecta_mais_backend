@@ -7,6 +7,7 @@ import {
   OSMProviderError,
   UserAlreadySubscribedError,
   UserNotFoundError,
+  UserNotSubscribedError,
 } from "@shared/errors/errors.js";
 import { verifyOptionalJwt } from "@shared/middlewares/verify-optional-jwt.js";
 import { FastifyInstance } from "fastify";
@@ -20,6 +21,7 @@ import {
   makeGetAvailableEventsUseCase,
   makeGetEventParticipantsUseCase,
   makeGetOrganizerEventsUseCase,
+  makeRemoveParticipantFromEventUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
 import {
@@ -371,6 +373,61 @@ export const eventRoutes = (app: FastifyInstance) => {
           return reply.status(403).send({
             message: error.message,
             code: "EVENT_NOT_AUTHORIZED",
+          });
+        }
+
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "DELETE",
+    url: "/events/:eventId",
+    onRequest: [app.authenticate],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        403: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const eventId = request.params.eventId;
+      const userId = request.user.sub;
+
+      const removeParticipantFromEventUseCase =
+        makeRemoveParticipantFromEventUseCase();
+      try {
+        await removeParticipantFromEventUseCase.execute(eventId, userId);
+
+        return reply.status(204).send(null);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof UserNotSubscribedError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "USER_NOT_SUBSCRIBED",
           });
         }
 
