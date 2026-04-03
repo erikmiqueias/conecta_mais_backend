@@ -20,20 +20,21 @@ export class UpdateUserUseCase implements IUpdateUserUseCase {
     userId: string,
     data: InputUpdateUserDTO,
   ): Promise<OutputUpdateUserDTO | null> {
-    const userExists = await this.getUserByIdRepository.execute(userId);
+    const [userExists, userWithSameEmail] = await Promise.all([
+      this.getUserByIdRepository.execute(userId),
+      data.email
+        ? this.getUserByEmailRepository.execute(data.email)
+        : Promise.resolve(null),
+    ]);
 
     if (!userExists) {
       throw new UserNotFoundError();
     }
 
-    const userWithSameEmail = await this.getUserByEmailRepository.execute(
-      data.email,
-    );
     if (userWithSameEmail && userWithSameEmail.id !== userId) {
       throw new EmailAlreadyExistsError();
     }
 
-    const updatedUser = await this.updateUserRepository.execute(userId, data);
-    return updatedUser;
+    return await this.updateUserRepository.execute(userId, data);
   }
 }

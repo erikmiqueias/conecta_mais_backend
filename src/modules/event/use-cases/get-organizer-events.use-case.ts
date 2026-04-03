@@ -23,7 +23,6 @@ export class GetOrganizerEventsUseCase implements IGetOrganizerEventsUseCase {
       throw new UserNotFoundError();
     }
 
-    const events = await this.getOrganizerEventsRepository.execute(organizerId);
-    return events;
+    return await this.getOrganizerEventsRepository.execute(organizerId);
   }
 }

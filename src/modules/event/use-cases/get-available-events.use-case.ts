@@ -17,10 +17,11 @@ export class GetAvailableEventsUseCase implements IGetAvailableEventsUseCase {
     }
 
     const userExists = await this.getUserByIdRepository.execute(userId);
+
     if (!userExists) {
       throw new UserNotFoundError();
     }
-    const events = await this.getAvailableEventsRepository.execute(userId);
-    return events;
+
+    return await this.getAvailableEventsRepository.execute(userId);
   }
 }

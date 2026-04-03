@@ -21,17 +21,15 @@ export class EventSubscriptionUseCase implements IEventSubscriptionUseCase {
     eventId: string,
     userId: string,
   ): Promise<OutputEventSubscriptionDTO> {
-    const eventExists = await this.getEventByIdRepository.execute(eventId);
+    const [eventExists, isSubscribe] = await Promise.all([
+      this.getEventByIdRepository.execute(eventId),
+      this.getUserSubscribeRepository.execute(userId, eventId),
+    ]);
 
     if (!eventExists) throw new EventNotFoundError();
 
     if (eventExists.organizerId === userId)
       throw new UserAlreadySubscribedError();
-
-    const isSubscribe = await this.getUserSubscribeRepository.execute(
-      userId,
-      eventId,
-    );
 
     if (isSubscribe) throw new UserAlreadySubscribedError();
 

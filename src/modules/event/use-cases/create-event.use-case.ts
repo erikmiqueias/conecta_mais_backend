@@ -22,6 +22,7 @@ export class CreateEventUseCase implements ICreateEventUseCase {
     userId: string,
   ): Promise<OutputCreateEventDTO> {
     const user = await this.getUserByIdRepository.execute(userId);
+
     if (!user) {
       throw new UserNotFoundError();
     }
@@ -52,7 +53,7 @@ export class CreateEventUseCase implements ICreateEventUseCase {
       ...data,
       organizerId: userId,
     };
-    const event = await this.createEventRepository.execute(eventData, userId);
-    return event;
+
+    return await this.createEventRepository.execute(eventData, userId);
   }
 }

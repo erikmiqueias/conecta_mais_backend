@@ -23,11 +23,9 @@ export class CreateUserUseCase implements ICreateUserUseCase {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const user = await this.createUserRepository.execute({
+    return await this.createUserRepository.execute({
       ...data,
       password: hashedPassword,
     });
-
-    return user;
   }
 }
