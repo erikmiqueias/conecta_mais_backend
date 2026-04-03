@@ -66,28 +66,28 @@ export const eventRoutes = (app: FastifyInstance) => {
       } catch (error) {
         if (error instanceof UserNotFoundError) {
           return reply.status(404).send({
-            message: "User not found",
+            message: error.message,
             code: "USER_NOT_FOUND",
           });
         }
 
         if (error instanceof AddressNotFoundError) {
           return reply.status(404).send({
-            message: "Address not found",
+            message: error.message,
             code: "ADDRESS_NOT_FOUND",
           });
         }
 
         if (error instanceof CoordinatesNotFoundError) {
           return reply.status(404).send({
-            message: "Coordinates not found",
+            message: error.message,
             code: "COORDINATES_NOT_FOUND",
           });
         }
 
         if (error instanceof OSMProviderError) {
           return reply.status(502).send({
-            message: "Error with geocoding service",
+            message: error.message,
             code: "GEOCODING_SERVICE_ERROR",
           });
         }
@@ -131,7 +131,7 @@ export const eventRoutes = (app: FastifyInstance) => {
       } catch (error) {
         if (error instanceof EventNotFoundError) {
           return reply.status(404).send({
-            message: "Event not found",
+            message: error.message,
             code: "NOT_FOUND",
           });
         }
@@ -170,7 +170,7 @@ export const eventRoutes = (app: FastifyInstance) => {
       } catch (error) {
         if (error instanceof UserNotFoundError) {
           return reply.status(404).send({
-            message: "User not found",
+            message: error.message,
             code: "USER_NOT_FOUND",
           });
         }
@@ -207,7 +207,7 @@ export const eventRoutes = (app: FastifyInstance) => {
       } catch (error) {
         if (error instanceof UserNotFoundError) {
           return reply.status(404).send({
-            message: "User not found",
+            message: error.message,
             code: "USER_NOT_FOUND",
           });
         }
@@ -257,13 +257,13 @@ export const eventRoutes = (app: FastifyInstance) => {
       } catch (error) {
         if (error instanceof EventNotFoundError) {
           return reply.status(404).send({
-            message: "Event not found",
+            message: error.message,
             code: "EVENT_NOT_FOUND",
           });
         }
         if (error instanceof EventNotAuthorizedError) {
           return reply.status(403).send({
-            message: "User not authorized to update this event",
+            message: error.message,
             code: "EVENT_NOT_AUTHORIZED",
           });
         }
