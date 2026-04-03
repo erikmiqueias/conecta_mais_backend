@@ -39,3 +39,9 @@ export class EventNotAuthorizedError extends Error {
     super("User not authorized to perform this action on the event");
   }
 }
+
+export class UserAlreadySubscribedError extends Error {
+  constructor() {
+    super("User already subscribed to the event");
+  }
+}
