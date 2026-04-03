@@ -1,4 +1,3 @@
-import { GetUserByIdRepository } from "@modules/user/repositories/get-user-by-id.repo.js";
 import { ErrorSchema } from "@schemas/error.schema.js";
 import {
   AddressNotFoundError,
@@ -13,13 +12,13 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
-import { OpenStreetMapProvider } from "../../../shared/providers/osm.provider.js";
-import { CreateEventRepository } from "../repositories/create-event.repo.js";
-import { DeleteEventRepository } from "../repositories/delete-event.repo.js";
-import { GetAvailableEventsRepository } from "../repositories/get-available-events.repo.js";
-import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
-import { GetOrganizerEventsRepository } from "../repositories/get-organizer-events.repo.js";
-import { UpdateEventRepository } from "../repositories/update-event.repo.js";
+import {
+  makeCreateEventUseCase,
+  makeDeleteEventUseCase,
+  makeGetAvailableEventsUseCase,
+  makeGetOrganizerEventsUseCase,
+  makeUpdateEventUseCase,
+} from "../factories/events.factory.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
@@ -27,11 +26,6 @@ import {
   GetOrganizerEventsOutputSchema,
   UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
-import { CreateEventUseCase } from "../use-cases/create-event.use-case.js";
-import { DeleteEventUseCase } from "../use-cases/delete-event.use-case.js";
-import { GetAvailableEventsUseCase } from "../use-cases/get-available-events.use-case.js";
-import { GetOrganizerEventsUseCase } from "../use-cases/get-organizer-events.use-case.js";
-import { UpdateEventUseCase } from "../use-cases/update-event.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -58,16 +52,9 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const userId = request.user.sub;
+      const createEventUseCase = makeCreateEventUseCase();
 
       try {
-        const createEventRepository = new CreateEventRepository();
-        const getUserByIdRepository = new GetUserByIdRepository();
-        const geoCoderProvider = new OpenStreetMapProvider();
-        const createEventUseCase = new CreateEventUseCase(
-          createEventRepository,
-          getUserByIdRepository,
-          geoCoderProvider,
-        );
         const event = await createEventUseCase.execute(request.body, userId);
         return reply.status(201).send(event);
       } catch (error) {
@@ -130,23 +117,8 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const { eventId } = request.params;
-      const userId = request.user.sub;
+      const deleteEventUseCase = makeDeleteEventUseCase();
 
-      const getEventByIdRepository = new GetEventByIdRepository();
-
-      const isOwner = await getEventByIdRepository.execute(eventId);
-
-      if (isOwner?.organizerId !== userId) {
-        return reply.status(403).send({
-          message: "Unauthorized",
-          code: "UNAUTHORIZED",
-        });
-      }
-      const deleteEventRepository = new DeleteEventRepository();
-      const deleteEventUseCase = new DeleteEventUseCase(
-        getEventByIdRepository,
-        deleteEventRepository,
-      );
       try {
         await deleteEventUseCase.execute(eventId);
         return reply.status(204).send(null);
@@ -185,12 +157,7 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const organizerId = request.user.sub;
 
-      const getUserByIdRepository = new GetUserByIdRepository();
-      const getOrganizerEventsRepository = new GetOrganizerEventsRepository();
-      const getOrganizerEventsUseCase = new GetOrganizerEventsUseCase(
-        getOrganizerEventsRepository,
-        getUserByIdRepository,
-      );
+      const getOrganizerEventsUseCase = makeGetOrganizerEventsUseCase();
       try {
         const events = await getOrganizerEventsUseCase.execute(organizerId);
         return reply.status(200).send(events);
@@ -226,12 +193,7 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const loggedUser = request.user?.sub || undefined;
-      const getUserByIdRepository = new GetUserByIdRepository();
-      const getAvailableEventsRepository = new GetAvailableEventsRepository();
-      const getAvailableEventsUseCase = new GetAvailableEventsUseCase(
-        getAvailableEventsRepository,
-        getUserByIdRepository,
-      );
+      const getAvailableEventsUseCase = makeGetAvailableEventsUseCase();
 
       try {
         const events = await getAvailableEventsUseCase.execute(loggedUser);
@@ -278,14 +240,7 @@ export const eventRoutes = (app: FastifyInstance) => {
       const { eventId } = request.params;
       const userId = request.user.sub;
 
-      const getEventByIdRepository = new GetEventByIdRepository();
-      const updateEventRepository = new UpdateEventRepository();
-      const geoCoderProvider = new OpenStreetMapProvider();
-      const updateEventUseCase = new UpdateEventUseCase(
-        updateEventRepository,
-        getEventByIdRepository,
-        geoCoderProvider,
-      );
+      const updateEventUseCase = makeUpdateEventUseCase();
       try {
         const updatedEvent = await updateEventUseCase.execute(
           eventId,
