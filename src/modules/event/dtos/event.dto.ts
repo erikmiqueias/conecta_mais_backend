@@ -20,3 +20,8 @@ export type OutputGetAvailableEventsDTO = z.infer<
 
 export type InputUpdateEventDTO = z.infer<typeof UpdateEventInputSchema>;
 export type OutputUpdateEventDTO = z.infer<typeof UpdateEventOutputSchema>;
+
+export type OutputEventSubscriptionDTO = {
+  id: string;
+  subscriptionDateTime: Date;
+};

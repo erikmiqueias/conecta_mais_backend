@@ -107,3 +107,37 @@ export const UpdateEventOutputSchema = z.object({
   deletedAt: z.date().nullable(),
   organizerId: z.string(),
 });
+
+// EventSubscriptions
+const EventSubscriptionCoreSchema = {
+  userId: z.uuid({
+    error: "User ID must be a valid UUID",
+  }),
+  eventId: z.uuid({
+    error: "Event ID must be a valid UUID",
+  }),
+};
+
+export const EventSubscriptionSchema = z.object({
+  ...EventSubscriptionCoreSchema,
+  id: z.uuid({
+    error: "Event subscription ID must be a valid UUID",
+  }),
+  subscriptionDateTime: z.coerce.date({
+    error: "Subscription date and time must be a valid date",
+  }),
+});
+
+export const InputEventSubscriptionSchema = z.object({
+  ...EventSubscriptionCoreSchema,
+  subscriptionDateTime: z.coerce.date({
+    error: "Subscription date and time must be a valid date",
+  }),
+});
+
+export const OutputEventSubscriptionSchema = z.object({
+  id: z.uuid({
+    error: "Event subscription ID must be a valid UUID",
+  }),
+  subscriptionDateTime: z.coerce.date(),
+});
