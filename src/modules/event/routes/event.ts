@@ -5,6 +5,7 @@ import {
   EventNotAuthorizedError,
   EventNotFoundError,
   OSMProviderError,
+  UserAlreadySubscribedError,
   UserNotFoundError,
 } from "@shared/errors/errors.js";
 import { verifyOptionalJwt } from "@shared/middlewares/verify-optional-jwt.js";
@@ -19,13 +20,18 @@ import {
   makeGetOrganizerEventsUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
+import { EventSubscriptionRepository } from "../repositories/event-subscription.repo.js";
+import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
+import { GetUserSubscribeRepository } from "../repositories/get-user-subscribe.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
   GetAvailableEventsOutputSchema,
   GetOrganizerEventsOutputSchema,
+  InputEventSubscriptionSchema,
   UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
+import { EventSubscriptionUseCase } from "../use-cases/event-subscription.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -267,6 +273,64 @@ export const eventRoutes = (app: FastifyInstance) => {
           message: errorMessage,
           code: "INTERNAL_SERVER_ERROR",
         });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "POST",
+    url: "/events/:eventId/join",
+    onRequest: [app.authenticate],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        201: InputEventSubscriptionSchema.omit({ eventId: true, userId: true }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        409: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+
+    handler: async (request, reply) => {
+      const userId = request.user.sub;
+
+      const eventSubscriptionRepository = new EventSubscriptionRepository();
+      const getEventByIdRepository = new GetEventByIdRepository();
+      const getUserSubscribeRepository = new GetUserSubscribeRepository();
+      const eventSubscriptionUseCase = new EventSubscriptionUseCase(
+        eventSubscriptionRepository,
+        getEventByIdRepository,
+        getUserSubscribeRepository,
+      );
+
+      try {
+        const subscription = await eventSubscriptionUseCase.execute(
+          request.params.eventId,
+          userId,
+        );
+
+        return reply.status(201).send(subscription);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof UserAlreadySubscribedError) {
+          return reply.status(409).send({
+            message: error.message,
+            code: "USER_ALREADY_SUBSCRIBED",
+          });
+        }
       }
     },
   });
