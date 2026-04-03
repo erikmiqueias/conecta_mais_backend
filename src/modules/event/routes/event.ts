@@ -16,22 +16,23 @@ import { z } from "zod";
 import {
   makeCreateEventUseCase,
   makeDeleteEventUseCase,
+  makeEventSubscriptionUseCase,
   makeGetAvailableEventsUseCase,
   makeGetOrganizerEventsUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
-import { EventSubscriptionRepository } from "../repositories/event-subscription.repo.js";
 import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
-import { GetUserSubscribeRepository } from "../repositories/get-user-subscribe.repo.js";
+import { GetEventParticipantsRepository } from "../repositories/get-event-participants.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
   GetAvailableEventsOutputSchema,
+  GetEventParticipantsOutputSchema,
   GetOrganizerEventsOutputSchema,
   InputEventSubscriptionSchema,
   UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
-import { EventSubscriptionUseCase } from "../use-cases/event-subscription.use-case.js";
+import { GetEventParticipantsUseCase } from "../use-cases/get-event-participants.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -301,14 +302,7 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const userId = request.user.sub;
 
-      const eventSubscriptionRepository = new EventSubscriptionRepository();
-      const getEventByIdRepository = new GetEventByIdRepository();
-      const getUserSubscribeRepository = new GetUserSubscribeRepository();
-      const eventSubscriptionUseCase = new EventSubscriptionUseCase(
-        eventSubscriptionRepository,
-        getEventByIdRepository,
-        getUserSubscribeRepository,
-      );
+      const eventSubscriptionUseCase = makeEventSubscriptionUseCase();
 
       try {
         const subscription = await eventSubscriptionUseCase.execute(
@@ -331,6 +325,69 @@ export const eventRoutes = (app: FastifyInstance) => {
             code: "USER_ALREADY_SUBSCRIBED",
           });
         }
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/events/:eventId/subscriptions",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        200: GetEventParticipantsOutputSchema,
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        403: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const eventId = request.params.eventId;
+      const userId = request.user.sub;
+
+      const getEventByIdRepository = new GetEventByIdRepository();
+      const getEventParticipantsRepository =
+        new GetEventParticipantsRepository();
+      const getEventParticipantsUseCase = new GetEventParticipantsUseCase(
+        getEventParticipantsRepository,
+        getEventByIdRepository,
+      );
+
+      try {
+        const participants = await getEventParticipantsUseCase.execute(
+          eventId,
+          userId,
+        );
+        return reply.status(200).send(participants);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof EventNotAuthorizedError) {
+          return reply.status(403).send({
+            message: error.message,
+            code: "EVENT_NOT_AUTHORIZED",
+          });
+        }
+
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
       }
     },
   });
