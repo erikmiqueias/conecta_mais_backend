@@ -21,6 +21,7 @@ import {
   makeGetAvailableEventsUseCase,
   makeGetEventParticipantsUseCase,
   makeGetOrganizerEventsUseCase,
+  makeGetUserSubscriptionsUseCase,
   makeRemoveParticipantFromEventUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
@@ -30,6 +31,7 @@ import {
   GetAvailableEventsOutputSchema,
   GetEventParticipantsOutputSchema,
   GetOrganizerEventsOutputSchema,
+  GetUserSubscriptionsOutputSchema,
   InputEventSubscriptionSchema,
   UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
@@ -431,6 +433,38 @@ export const eventRoutes = (app: FastifyInstance) => {
           });
         }
 
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/me/subscriptions",
+    onRequest: [app.authenticate],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      response: {
+        200: GetUserSubscriptionsOutputSchema,
+        400: ErrorSchema,
+        401: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user.sub;
+
+      const getUserSubscriptionsUseCase = makeGetUserSubscriptionsUseCase();
+
+      try {
+        const subscriptions = await getUserSubscriptionsUseCase.execute(userId);
+        return reply.status(200).send(subscriptions);
+      } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({
