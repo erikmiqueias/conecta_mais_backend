@@ -18,11 +18,10 @@ import {
   makeDeleteEventUseCase,
   makeEventSubscriptionUseCase,
   makeGetAvailableEventsUseCase,
+  makeGetEventParticipantsUseCase,
   makeGetOrganizerEventsUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
-import { GetEventByIdRepository } from "../repositories/get-event-by-id.repo.js";
-import { GetEventParticipantsRepository } from "../repositories/get-event-participants.repo.js";
 import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
@@ -32,7 +31,6 @@ import {
   InputEventSubscriptionSchema,
   UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
-import { GetEventParticipantsUseCase } from "../use-cases/get-event-participants.use-case.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -353,13 +351,7 @@ export const eventRoutes = (app: FastifyInstance) => {
       const eventId = request.params.eventId;
       const userId = request.user.sub;
 
-      const getEventByIdRepository = new GetEventByIdRepository();
-      const getEventParticipantsRepository =
-        new GetEventParticipantsRepository();
-      const getEventParticipantsUseCase = new GetEventParticipantsUseCase(
-        getEventParticipantsRepository,
-        getEventByIdRepository,
-      );
+      const getEventParticipantsUseCase = makeGetEventParticipantsUseCase();
 
       try {
         const participants = await getEventParticipantsUseCase.execute(
