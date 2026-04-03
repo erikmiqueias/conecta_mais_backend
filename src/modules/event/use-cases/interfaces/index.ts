@@ -4,5 +4,6 @@ export { IEventSubscriptionUseCase } from "./event-subscription.interface.js";
 export { IGetAvailableEventsUseCase } from "./get-available-events.interface.js";
 export { IGetEventParticipantsUseCase } from "./get-event-participants.interface.js";
 export { IGetOrganizerEventsUseCase } from "./get-organizer-events.interface.js";
+export { IGetUserSubscriptionsUseCase } from "./get-user-subscriptions.interface.js";
 export { IRemoveParticipantFromEventUseCase } from "./remove-participant-from-event.interface.js";
 export { IUpdateEventUseCase } from "./update-event.interface.js";
