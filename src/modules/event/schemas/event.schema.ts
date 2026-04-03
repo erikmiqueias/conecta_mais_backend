@@ -153,3 +153,24 @@ export const GetEventParticipantsOutputSchema = z.array(
     }),
   }),
 );
+
+export const GetUserSubscriptionsOutputSchema = z.array(
+  z.object({
+    id: z.uuid({
+      error: "Event subscription ID must be a valid UUID",
+    }),
+    subscriptionDateTime: z.coerce.date(),
+    event: z.object({
+      name: z.string(),
+      description: z.string(),
+      eventAddress: z.string(),
+      eventType: z.string(),
+      startDateTime: z.coerce.date(),
+      endDateTime: z.coerce.date(),
+      organizer: z.object({
+        id: z.string(),
+        username: z.string(),
+      }),
+    }),
+  }),
+);

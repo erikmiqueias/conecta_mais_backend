@@ -6,6 +6,7 @@ import {
   GetAvailableEventsOutputSchema,
   GetEventParticipantsOutputSchema,
   GetOrganizerEventsOutputSchema,
+  GetUserSubscriptionsOutputSchema,
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
 } from "../schemas/event.schema.js";
@@ -29,4 +30,7 @@ export type OutputEventSubscriptionDTO = {
 
 export type OutputGetEventParticipantsDTO = z.infer<
   typeof GetEventParticipantsOutputSchema
+>;
+export type OutputGetUserSubscriptionsDTO = z.infer<
+  typeof GetUserSubscriptionsOutputSchema
 >;
