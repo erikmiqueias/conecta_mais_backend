@@ -2,7 +2,7 @@ import {
   EventNotAuthorizedError,
   EventNotFoundError,
 } from "@shared/errors/errors.js";
-import { IOSMProvider } from "@shared/providers/interfaces/osm.interface.js";
+import { IGeocoderProvider } from "@shared/providers/interfaces/osm.interface.js";
 
 import {
   InputUpdateEventDTO,
@@ -17,7 +17,7 @@ export class UpdateEventUseCase implements IUpdateEventUseCase {
   constructor(
     private updateEventRepository: IUpdateEventRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,
-    private readonly geoCoderProvider: IOSMProvider,
+    private readonly geoCoderProvider: IGeocoderProvider,
   ) {}
   async execute(
     eventId: string,

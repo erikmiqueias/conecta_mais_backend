@@ -1,4 +1,7 @@
-import { EventNotFoundError } from "@shared/errors/errors.js";
+import {
+  EventNotAuthorizedError,
+  EventNotFoundError,
+} from "@shared/errors/errors.js";
 
 import { IDeleteEventRepository } from "../repositories/interfaces/delete-event.interface.js";
 import { IGetEventByIdRepository } from "../repositories/interfaces/get-event-by-id.interface.js";
@@ -14,6 +17,11 @@ export class DeleteEventUseCase implements IDeleteEventUseCase {
 
     if (!eventExists) {
       throw new EventNotFoundError();
+    }
+
+    const isOwner = eventExists.organizerId === eventId;
+    if (!isOwner) {
+      throw new EventNotAuthorizedError();
     }
 
     return await this.deleteEventRepository.execute(eventId);
