@@ -5,6 +5,7 @@ import { GetEventParticipantsRepository } from "../repositories/get-event-partic
 import {
   EventSubscriptionRepository,
   GetUserSubscribeRepository,
+  RemoveParticipantFromEventRepository,
 } from "../repositories/index.js";
 import {
   CreateEventRepository,
@@ -23,6 +24,7 @@ import {
   GetOrganizerEventsUseCase,
   UpdateEventUseCase,
 } from "../use-cases/index.js";
+import { RemoveParticipantFromEventUseCase } from "../use-cases/remove-participant-from-event.use-case.js";
 
 export const makeCreateEventUseCase = () => {
   const createEventRepository = new CreateEventRepository();
@@ -98,4 +100,18 @@ export const makeGetEventParticipantsUseCase = () => {
     getEventByIdRepository,
   );
   return getEventParticipantsUseCase;
+};
+
+export const makeRemoveParticipantFromEventUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const removeParticipantFromEventRepository =
+    new RemoveParticipantFromEventRepository();
+  const getUserSubscribeRepository = new GetUserSubscribeRepository();
+  const removeParticipantFromEventUseCase =
+    new RemoveParticipantFromEventUseCase(
+      removeParticipantFromEventRepository,
+      getEventByIdRepository,
+      getUserSubscribeRepository,
+    );
+  return removeParticipantFromEventUseCase;
 };

@@ -45,3 +45,9 @@ export class UserAlreadySubscribedError extends Error {
     super("User already subscribed to the event");
   }
 }
+
+export class UserNotSubscribedError extends Error {
+  constructor() {
+    super("User not subscribed to the event");
+  }
+}

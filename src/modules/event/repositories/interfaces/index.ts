@@ -6,4 +6,5 @@ export { IGetEventByIdRepository } from "./get-event-by-id.interface.js";
 export { IGetEventParticipantsRepository } from "./get-event-participants.interface.js";
 export { IGetOrganizerEventsRepository } from "./get-organizer-events.interface.js";
 export { IGetUserSubscribeRepository } from "./get-user-subscribe.interface.js";
+export { IRemoveParticipantFromEventRepository } from "./remove-participant.from-event.interface.js";
 export { IUpdateEventRepository } from "./update-event.interface.js";
