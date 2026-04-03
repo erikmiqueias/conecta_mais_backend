@@ -1,6 +1,8 @@
 export { ICreateEventRepository } from "./create-event.interface.js";
 export { IDeleteEventRepository } from "./delete-event.interface.js";
+export { IEventSubscriptionRepository } from "./event-subscription.interface.js";
 export { IGetAvailableEventsRepository } from "./get-available-events.interface.js";
 export { IGetEventByIdRepository } from "./get-event-by-id.interface.js";
 export { IGetOrganizerEventsRepository } from "./get-organizer-events.interface.js";
+export { IGetUserSubscribeRepository } from "./get-user-subscribe.interface.js";
 export { IUpdateEventRepository } from "./update-event.interface.js";
