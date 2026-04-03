@@ -2,7 +2,7 @@ import {
   EventNotAuthorizedError,
   EventNotFoundError,
 } from "@shared/errors/errors.js";
-import { IOSMProvider } from "@shared/middlewares/interfaces/osm.interface.js";
+import { IOSMProvider } from "@shared/providers/interfaces/osm.interface.js";
 
 import {
   InputUpdateEventDTO,

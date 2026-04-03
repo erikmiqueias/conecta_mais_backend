@@ -4,14 +4,14 @@ import {
   OSMProviderError,
 } from "@shared/errors/errors.js";
 
-import { IOSMProvider } from "./middlewares/interfaces/osm.interface.js";
+import { IGeocoderProvider } from "./interfaces/osm.interface.js";
 
 interface NominatimResponse {
   lat: string;
   lon: string;
 }
 
-export class OpenStreetMapProvider implements IOSMProvider {
+export class OpenStreetMapProvider implements IGeocoderProvider {
   async getCoordinatesFromAddress(
     address: string,
   ): Promise<{ latitude: number; longitude: number }> {

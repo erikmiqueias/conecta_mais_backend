@@ -1,4 +1,4 @@
-export interface IOSMProvider {
+export interface IGeocoderProvider {
   getCoordinatesFromAddress(
     address: string,
   ): Promise<{ latitude: number; longitude: number }>;
