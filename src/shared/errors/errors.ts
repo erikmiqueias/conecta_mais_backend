@@ -76,8 +76,26 @@ export class EventAlreadyCanceledError extends Error {
   }
 }
 
+export class EventAlreadyReopenedError extends Error {
+  constructor() {
+    super("Event already reopened");
+  }
+}
+
 export class CannotCancelPastEventError extends Error {
   constructor() {
     super("Cannot cancel past event");
+  }
+}
+
+export class CannotReopenPastEventError extends Error {
+  constructor() {
+    super("Cannot reopen past event");
+  }
+}
+
+export class EventNotCanceledError extends Error {
+  constructor() {
+    super("Event not canceled");
   }
 }

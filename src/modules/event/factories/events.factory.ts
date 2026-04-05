@@ -30,6 +30,7 @@ import {
   GetOrganizerEventsUseCase,
   GetUserSubscriptionsUseCase,
   RemoveParticipantFromEventUseCase,
+  ReopenEventUseCase,
   UpdateEventUseCase,
 } from "../use-cases/index.js";
 
@@ -153,4 +154,14 @@ export const makeCancelEventUseCase = () => {
     updateEventStatusRepository,
   );
   return cancelEventUseCase;
+};
+
+export const makeReopenEventUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const updateEventStatusRepository = new UpdateEventStatusRepository();
+  const reopenEventUseCase = new ReopenEventUseCase(
+    getEventByIdRepository,
+    updateEventStatusRepository,
+  );
+  return reopenEventUseCase;
 };

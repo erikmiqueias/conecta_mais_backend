@@ -8,4 +8,5 @@ export { GetEventParticipantsUseCase } from "./get-event-participants.use-case.j
 export { GetOrganizerEventsUseCase } from "./get-organizer-events.use-case.js";
 export { GetUserSubscriptionsUseCase } from "./get-user-subscriptions.use-case.js";
 export { RemoveParticipantFromEventUseCase } from "./remove-participant-from-event.use-case.js";
+export { ReopenEventUseCase } from "./reopen-event.use-case.js";
 export { UpdateEventUseCase } from "./update-event.use-case.js";
