@@ -43,7 +43,7 @@ import { CreateEventReviewInputSchema } from "../schemas/event-review.schema.js"
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/me/events",
+    url: "/events",
     onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       tags: ["Event"],
@@ -109,7 +109,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
-    url: "/me/events/:eventId",
+    url: "/events/:eventId",
     onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       security: [{ bearerAuth: [] }],
@@ -229,7 +229,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "PATCH",
-    url: "/me/events/:eventId",
+    url: "/events/:eventId",
     onRequest: [app.authenticate, app.requireOrganizer],
     schema: {
       security: [{ bearerAuth: [] }],
@@ -285,7 +285,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
-    url: "/events/:eventId/join",
+    url: "/events/:eventId/subscriptions",
     onRequest: [app.authenticate],
     schema: {
       security: [{ bearerAuth: [] }],
@@ -393,7 +393,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
-    url: "/events/:eventId",
+    url: "/events/:eventId/subscriptions",
     onRequest: [app.authenticate],
     schema: {
       security: [{ bearerAuth: [] }],

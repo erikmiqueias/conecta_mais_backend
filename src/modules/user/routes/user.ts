@@ -62,7 +62,7 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "DELETE",
-    url: "/users/me",
+    url: "/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
@@ -100,7 +100,7 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/users/me",
+    url: "/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
@@ -140,7 +140,7 @@ export const userRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "PUT",
-    url: "/users/me",
+    url: "/me",
     onRequest: app.authenticate,
     schema: {
       tags: ["User"],
