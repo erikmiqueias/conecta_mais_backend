@@ -1,6 +1,7 @@
 import {
   EvaluationNotDisposibleError,
   EventNotFoundError,
+  OrganizerCannotReviewOwnEventError,
   UserAlreadyReviewedError,
   UserNotSubscribedError,
 } from "@shared/errors/errors.js";
@@ -27,12 +28,16 @@ export class CreateEventReviewUseCase implements ICreateEventReviewUseCase {
   ): Promise<boolean> {
     const [eventExists, isReview, isSubscribe] = await Promise.all([
       this.getEventByIdRepository.execute(eventId),
-      this.getUserReviewRepository.execute(eventId),
+      this.getUserReviewRepository.execute(userId, eventId),
       this.getUserSubscribeRepository.execute(userId, eventId),
     ]);
 
     if (!eventExists) {
       throw new EventNotFoundError();
+    }
+
+    if (eventExists.organizerId === userId) {
+      throw new OrganizerCannotReviewOwnEventError();
     }
 
     if (!isSubscribe) {
@@ -49,10 +54,6 @@ export class CreateEventReviewUseCase implements ICreateEventReviewUseCase {
       throw new EvaluationNotDisposibleError(
         (evaluationWindow.message ?? evaluationWindow.errorCode)!,
       );
-    }
-
-    if (eventExists.organizerId === userId) {
-      throw new UserAlreadyReviewedError();
     }
 
     return !!(await this.createEventReviewRepository.execute(

@@ -5,6 +5,7 @@ import {
   EvaluationNotDisposibleError,
   EventNotAuthorizedError,
   EventNotFoundError,
+  OrganizerCannotReviewOwnEventError,
   OSMProviderError,
   UserAlreadyReviewedError,
   UserAlreadySubscribedError,
@@ -495,6 +496,7 @@ export const eventRoutes = (app: FastifyInstance) => {
         204: z.null(),
         400: ErrorSchema,
         401: ErrorSchema,
+        403: ErrorSchema,
         404: ErrorSchema,
         500: ErrorSchema,
       },
@@ -527,6 +529,13 @@ export const eventRoutes = (app: FastifyInstance) => {
           return reply.status(400).send({
             message: error.message,
             code: "EVALUATION_NOT_DISPOSIBLE",
+          });
+        }
+
+        if (error instanceof OrganizerCannotReviewOwnEventError) {
+          return reply.status(403).send({
+            message: error.message,
+            code: "ORGANIZER_CANNOT_REVIEW_OWN_EVENT",
           });
         }
 

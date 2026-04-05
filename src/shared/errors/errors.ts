@@ -63,3 +63,9 @@ export class EvaluationNotDisposibleError extends Error {
     super(message);
   }
 }
+
+export class OrganizerCannotReviewOwnEventError extends Error {
+  constructor() {
+    super("Organizer cannot review own event");
+  }
+}
