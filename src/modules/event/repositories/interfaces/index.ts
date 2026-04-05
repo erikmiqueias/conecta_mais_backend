@@ -11,3 +11,4 @@ export { IGetUserSubscribeRepository } from "./get-user-subscribe.interface.js";
 export { IGetUserSubscriptionsRepository } from "./get-user-subscriptions.interface.js";
 export { IRemoveParticipantFromEventRepository } from "./remove-participant.from-event.interface.js";
 export { IUpdateEventRepository } from "./update-event.interface.js";
+export { IUpdateEventStatusRepository } from "./update-event-status.interface.js";

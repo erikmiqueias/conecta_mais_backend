@@ -1,3 +1,4 @@
+export { CancelEventUseCase } from "./cancel-event.use-case.js";
 export { CreateEventUseCase } from "./create-event.use-case.js";
 export { CreateEventReviewUseCase } from "./create-event-review.use-case.js";
 export { DeleteEventUseCase } from "./delete-event.use-case.js";

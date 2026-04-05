@@ -11,3 +11,4 @@ export { GetUserSubscribeRepository } from "./get-user-subscribe.repo.js";
 export { GetUserSubscriptionsRepository } from "./get-user-subscriptions.repo.js";
 export { RemoveParticipantFromEventRepository } from "./remove-participant-from-event.repo.js";
 export { UpdateEventRepository } from "./update-event.repo.js";
+export { UpdateEventStatusRepository } from "./update-event-status.repo.js";
