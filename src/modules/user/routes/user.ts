@@ -139,7 +139,7 @@ export const userRoutes = (app: FastifyInstance) => {
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
-    method: "PUT",
+    method: "PATCH",
     url: "/me",
     onRequest: app.authenticate,
     schema: {
