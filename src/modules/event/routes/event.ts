@@ -1,8 +1,10 @@
 import { ErrorSchema } from "@schemas/error.schema.js";
 import {
   AddressNotFoundError,
+  CannotCancelPastEventError,
   CoordinatesNotFoundError,
   EvaluationNotDisposibleError,
+  EventAlreadyCanceledError,
   EventNotAuthorizedError,
   EventNotFoundError,
   OrganizerCannotReviewOwnEventError,
@@ -18,6 +20,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import {
+  makeCancelEventUseCase,
   makeCreateEventReviewUseCase,
   makeCreateEventUseCase,
   makeDeleteEventUseCase,
@@ -545,6 +548,66 @@ export const eventRoutes = (app: FastifyInstance) => {
           message: errorMessage,
           code: "INTERNAL_SERVER_ERROR",
         });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/events/:eventId/cancel",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const eventId = request.params.eventId;
+      const organizerId = request.user.sub;
+
+      try {
+        const cancelEventUseCase = makeCancelEventUseCase();
+
+        await cancelEventUseCase.execute(organizerId, eventId);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof EventNotAuthorizedError) {
+          return reply.status(403).send({
+            message: error.message,
+            code: "EVENT_NOT_AUTHORIZED",
+          });
+        }
+
+        if (error instanceof EventAlreadyCanceledError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "EVENT_ALREADY_CANCELED",
+          });
+        }
+
+        if (error instanceof CannotCancelPastEventError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "CANNOT_CANCEL_PAST_EVENT",
+          });
+        }
       }
     },
   });
