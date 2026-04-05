@@ -15,7 +15,7 @@ export const fastifySetupConfig = async (app: FastifyInstance) => {
 
   app.register(fastifyCors, {
     origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   });
 
