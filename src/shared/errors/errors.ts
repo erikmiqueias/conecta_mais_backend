@@ -51,3 +51,15 @@ export class UserNotSubscribedError extends Error {
     super("User not subscribed to the event");
   }
 }
+
+export class UserAlreadyReviewedError extends Error {
+  constructor() {
+    super("User already reviewed the event");
+  }
+}
+
+export class EvaluationNotDisposibleError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

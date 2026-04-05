@@ -1,3 +1,5 @@
 export interface IGetEventByIdRepository {
-  execute(eventId: string): Promise<{ organizerId: string; id: string } | null>;
+  execute(
+    eventId: string,
+  ): Promise<{ organizerId: string; id: string; endDateTime: Date } | null>;
 }

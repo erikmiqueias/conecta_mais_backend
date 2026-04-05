@@ -2,9 +2,11 @@ import { ErrorSchema } from "@schemas/error.schema.js";
 import {
   AddressNotFoundError,
   CoordinatesNotFoundError,
+  EvaluationNotDisposibleError,
   EventNotAuthorizedError,
   EventNotFoundError,
   OSMProviderError,
+  UserAlreadyReviewedError,
   UserAlreadySubscribedError,
   UserNotFoundError,
   UserNotSubscribedError,
@@ -15,6 +17,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 
 import {
+  makeCreateEventReviewUseCase,
   makeCreateEventUseCase,
   makeDeleteEventUseCase,
   makeEventSubscriptionUseCase,
@@ -35,6 +38,7 @@ import {
   InputEventSubscriptionSchema,
   UpdateEventInputSchema,
 } from "../schemas/event.schema.js";
+import { CreateEventReviewInputSchema } from "../schemas/event-review.schema.js";
 
 export const eventRoutes = (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -465,6 +469,67 @@ export const eventRoutes = (app: FastifyInstance) => {
         const subscriptions = await getUserSubscriptionsUseCase.execute(userId);
         return reply.status(200).send(subscriptions);
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "POST",
+    url: "/events/:eventId/review",
+    onRequest: [app.authenticate],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      body: CreateEventReviewInputSchema,
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const eventId = request.params.eventId;
+      const userId = request.user.sub;
+
+      const createEventReviewUseCase = makeCreateEventReviewUseCase();
+
+      try {
+        await createEventReviewUseCase.execute(eventId, userId, request.body);
+        return reply.status(204).send(null);
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof UserAlreadyReviewedError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "USER_ALREADY_REVIEWED",
+          });
+        }
+
+        if (error instanceof EvaluationNotDisposibleError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "EVALUATION_NOT_DISPOSIBLE",
+          });
+        }
+
         const errorMessage =
           error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({

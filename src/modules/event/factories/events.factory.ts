@@ -1,6 +1,8 @@
 import { GetUserByIdRepository } from "@modules/user/repositories/index.js";
 import { OpenStreetMapProvider } from "@shared/providers/osm.provider.js";
 
+import { CreateEventReviewRepository } from "../repositories/create-event-review.repo.js";
+import { GetUserReviewRepository } from "../repositories/get-user-review.repo.js";
 import {
   EventSubscriptionRepository,
   GetEventParticipantsRepository,
@@ -16,6 +18,7 @@ import {
   GetOrganizerEventsRepository,
   UpdateEventRepository,
 } from "../repositories/index.js";
+import { CreateEventReviewUseCase } from "../use-cases/create-event-review.use-case.js";
 import { GetUserSubscriptionsUseCase } from "../use-cases/get-user-subscriptions.use-case.js";
 import {
   CreateEventUseCase,
@@ -124,4 +127,18 @@ export const makeGetUserSubscriptionsUseCase = () => {
     getUserSubscriptionsRepository,
   );
   return getUserSubscriptionsUseCase;
+};
+
+export const makeCreateEventReviewUseCase = () => {
+  const createEventReviewRepository = new CreateEventReviewRepository();
+  const getUserReviewRepository = new GetUserReviewRepository();
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const getUserSubscribeRepository = new GetUserSubscribeRepository();
+  const createEventReviewUseCase = new CreateEventReviewUseCase(
+    createEventReviewRepository,
+    getEventByIdRepository,
+    getUserReviewRepository,
+    getUserSubscribeRepository,
+  );
+  return createEventReviewUseCase;
 };
