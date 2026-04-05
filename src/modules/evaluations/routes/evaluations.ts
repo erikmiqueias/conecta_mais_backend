@@ -1,5 +1,6 @@
 import { ErrorSchema } from "@schemas/error.schema.js";
 import {
+  CannotEvaluateCanceledEventError,
   EvaluationNotDisposibleError,
   EventNotFoundError,
   OrganizerCannotReviewOwnEventError,
@@ -9,7 +10,10 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 
-import { makeCreateEventReviewUseCase } from "../factories/evaluations.factory.js";
+import {
+  makeCreateEventReviewUseCase,
+  makeGenerateEvaluateQrCodeUseCase,
+} from "../factories/evaluations.factory.js";
 import { CreateEventReviewInputSchema } from "../schemas/evaluations.schemas.js";
 
 export const evaluationsRoutes = (app: FastifyInstance) => {
@@ -73,6 +77,74 @@ export const evaluationsRoutes = (app: FastifyInstance) => {
           });
         }
 
+        const errorMessage =
+          error instanceof Error ? error.message : "An unknown error occurred";
+        return reply.status(500).send({
+          message: errorMessage,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/events/:eventId/evaluation-qrcode",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        200: z.object({
+          qrCode: z.string(),
+        }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const organizerId = request.user.sub;
+      const eventId = request.params.eventId;
+
+      const generateEvaluateQrCodeUseCase = makeGenerateEvaluateQrCodeUseCase();
+      try {
+        const qrCode = await generateEvaluateQrCodeUseCase.execute(
+          eventId,
+          organizerId,
+        );
+
+        return reply
+          .status(200)
+          .send({ qrCode })
+          .header("Content-Type", "image/png");
+      } catch (error) {
+        if (error instanceof EventNotFoundError) {
+          return reply.status(404).send({
+            message: error.message,
+            code: "EVENT_NOT_FOUND",
+          });
+        }
+
+        if (error instanceof EvaluationNotDisposibleError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "EVALUATION_NOT_DISPOSIBLE",
+          });
+        }
+
+        if (error instanceof CannotEvaluateCanceledEventError) {
+          return reply.status(400).send({
+            message: error.message,
+            code: "EVALUATION_NOT_DISPOSIBLE",
+          });
+        }
         const errorMessage =
           error instanceof Error ? error.message : "An unknown error occurred";
         return reply.status(500).send({

@@ -72,7 +72,7 @@ export class OrganizerCannotReviewOwnEventError extends Error {
 
 export class EventAlreadyCanceledError extends Error {
   constructor() {
-    super("Event already cancelled");
+    super("Event already canceled");
   }
 }
 
@@ -97,5 +97,11 @@ export class CannotReopenPastEventError extends Error {
 export class EventNotCanceledError extends Error {
   constructor() {
     super("Event not canceled");
+  }
+}
+
+export class CannotEvaluateCanceledEventError extends Error {
+  constructor() {
+    super("Cannot evaluate canceled event");
   }
 }

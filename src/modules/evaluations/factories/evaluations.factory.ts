@@ -4,6 +4,7 @@ import { GetUserSubscribeRepository } from "@modules/event/repositories/get-user
 import { CreateEventReviewRepository } from "../repositories/create-event-review.repo.js";
 import { GetUserReviewRepository } from "../repositories/get-user-review.repo.js";
 import { CreateEventReviewUseCase } from "../use-cases/create-event-review.use-case.js";
+import { GenerateEvaluateQrCodeUseCase } from "../use-cases/generate-evaluate-qrcode.use-case.js";
 
 export const makeCreateEventReviewUseCase = () => {
   const createEventReviewRepository = new CreateEventReviewRepository();
@@ -17,4 +18,12 @@ export const makeCreateEventReviewUseCase = () => {
     getUserSubscribeRepository,
   );
   return createEventReviewUseCase;
+};
+
+export const makeGenerateEvaluateQrCodeUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const generateEvaluateQrCodeUseCase = new GenerateEvaluateQrCodeUseCase(
+    getEventByIdRepository,
+  );
+  return generateEvaluateQrCodeUseCase;
 };
