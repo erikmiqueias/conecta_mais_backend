@@ -1,11 +1,11 @@
 import { GetUserByIdRepository } from "@modules/user/repositories/index.js";
 import { OpenStreetMapProvider } from "@shared/providers/osm.provider.js";
 
-import { CreateEventReviewRepository } from "../repositories/create-event-review.repo.js";
-import { GetUserReviewRepository } from "../repositories/get-user-review.repo.js";
 import {
+  CreateEventReviewRepository,
   EventSubscriptionRepository,
   GetEventParticipantsRepository,
+  GetUserReviewRepository,
   GetUserSubscribeRepository,
   GetUserSubscriptionsRepository,
   RemoveParticipantFromEventRepository,
@@ -18,18 +18,18 @@ import {
   GetOrganizerEventsRepository,
   UpdateEventRepository,
 } from "../repositories/index.js";
-import { CreateEventReviewUseCase } from "../use-cases/create-event-review.use-case.js";
-import { GetUserSubscriptionsUseCase } from "../use-cases/get-user-subscriptions.use-case.js";
 import {
+  CreateEventReviewUseCase,
   CreateEventUseCase,
   DeleteEventUseCase,
   EventSubscriptionUseCase,
   GetAvailableEventsUseCase,
   GetEventParticipantsUseCase,
   GetOrganizerEventsUseCase,
+  GetUserSubscriptionsUseCase,
+  RemoveParticipantFromEventUseCase,
   UpdateEventUseCase,
 } from "../use-cases/index.js";
-import { RemoveParticipantFromEventUseCase } from "../use-cases/remove-participant-from-event.use-case.js";
 
 export const makeCreateEventUseCase = () => {
   const createEventRepository = new CreateEventRepository();

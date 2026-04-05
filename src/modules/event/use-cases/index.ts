@@ -1,7 +1,10 @@
 export { CreateEventUseCase } from "./create-event.use-case.js";
+export { CreateEventReviewUseCase } from "./create-event-review.use-case.js";
 export { DeleteEventUseCase } from "./delete-event.use-case.js";
 export { EventSubscriptionUseCase } from "./event-subscription.use-case.js";
 export { GetAvailableEventsUseCase } from "./get-available-events.use-case.js";
 export { GetEventParticipantsUseCase } from "./get-event-participants.use-case.js";
 export { GetOrganizerEventsUseCase } from "./get-organizer-events.use-case.js";
+export { GetUserSubscriptionsUseCase } from "./get-user-subscriptions.use-case.js";
+export { RemoveParticipantFromEventUseCase } from "./remove-participant-from-event.use-case.js";
 export { UpdateEventUseCase } from "./update-event.use-case.js";
