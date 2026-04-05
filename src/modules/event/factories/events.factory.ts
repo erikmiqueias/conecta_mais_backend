@@ -9,6 +9,7 @@ import {
   GetUserSubscribeRepository,
   GetUserSubscriptionsRepository,
   RemoveParticipantFromEventRepository,
+  UpdateEventStatusRepository,
 } from "../repositories/index.js";
 import {
   CreateEventRepository,
@@ -19,6 +20,7 @@ import {
   UpdateEventRepository,
 } from "../repositories/index.js";
 import {
+  CancelEventUseCase,
   CreateEventReviewUseCase,
   CreateEventUseCase,
   DeleteEventUseCase,
@@ -141,4 +143,14 @@ export const makeCreateEventReviewUseCase = () => {
     getUserSubscribeRepository,
   );
   return createEventReviewUseCase;
+};
+
+export const makeCancelEventUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const updateEventStatusRepository = new UpdateEventStatusRepository();
+  const cancelEventUseCase = new CancelEventUseCase(
+    getEventByIdRepository,
+    updateEventStatusRepository,
+  );
+  return cancelEventUseCase;
 };
