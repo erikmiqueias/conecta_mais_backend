@@ -1,6 +1,6 @@
+export { CreateEventReviewUseCase } from "../../evaluations/use-cases/create-event-review.use-case.js";
 export { CancelEventUseCase } from "./cancel-event.use-case.js";
 export { CreateEventUseCase } from "./create-event.use-case.js";
-export { CreateEventReviewUseCase } from "./create-event-review.use-case.js";
 export { DeleteEventUseCase } from "./delete-event.use-case.js";
 export { EventSubscriptionUseCase } from "./event-subscription.use-case.js";
 export { GetAvailableEventsUseCase } from "./get-available-events.use-case.js";

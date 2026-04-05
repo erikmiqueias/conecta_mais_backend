@@ -10,7 +10,6 @@ import {
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
 } from "../schemas/event.schema.js";
-import { CreateEventReviewInputSchema } from "../schemas/event-review.schema.js";
 export type InputCreateEventDTO = z.infer<typeof CreateEventInputSchema>;
 export type OutputCreateEventDTO = z.infer<typeof CreateEventOutputSchema>;
 export type InputGetOrganizerEventsDTO = string;
@@ -34,7 +33,4 @@ export type OutputGetEventParticipantsDTO = z.infer<
 >;
 export type OutputGetUserSubscriptionsDTO = z.infer<
   typeof GetUserSubscriptionsOutputSchema
->;
-export type InputCreateEventReviewDTO = z.infer<
-  typeof CreateEventReviewInputSchema
 >;

@@ -2,10 +2,8 @@ import { GetUserByIdRepository } from "@modules/user/repositories/index.js";
 import { OpenStreetMapProvider } from "@shared/providers/osm.provider.js";
 
 import {
-  CreateEventReviewRepository,
   EventSubscriptionRepository,
   GetEventParticipantsRepository,
-  GetUserReviewRepository,
   GetUserSubscribeRepository,
   GetUserSubscriptionsRepository,
   RemoveParticipantFromEventRepository,
@@ -21,7 +19,6 @@ import {
 } from "../repositories/index.js";
 import {
   CancelEventUseCase,
-  CreateEventReviewUseCase,
   CreateEventUseCase,
   DeleteEventUseCase,
   EventSubscriptionUseCase,
@@ -130,20 +127,6 @@ export const makeGetUserSubscriptionsUseCase = () => {
     getUserSubscriptionsRepository,
   );
   return getUserSubscriptionsUseCase;
-};
-
-export const makeCreateEventReviewUseCase = () => {
-  const createEventReviewRepository = new CreateEventReviewRepository();
-  const getUserReviewRepository = new GetUserReviewRepository();
-  const getEventByIdRepository = new GetEventByIdRepository();
-  const getUserSubscribeRepository = new GetUserSubscribeRepository();
-  const createEventReviewUseCase = new CreateEventReviewUseCase(
-    createEventReviewRepository,
-    getEventByIdRepository,
-    getUserReviewRepository,
-    getUserSubscribeRepository,
-  );
-  return createEventReviewUseCase;
 };
 
 export const makeCancelEventUseCase = () => {

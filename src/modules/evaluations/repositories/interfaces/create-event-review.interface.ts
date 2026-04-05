@@ -1,4 +1,4 @@
-import { InputCreateEventReviewDTO } from "@modules/event/dtos/event.dto.js";
+import { InputCreateEventReviewDTO } from "../../dtos/evaluations.dtos.js";
 
 export interface ICreateEventReviewRepository {
   execute(

@@ -1,7 +1,7 @@
 import { prisma } from "@shared/lib/db.js";
 
-import { InputCreateEventReviewDTO } from "../dtos/event.dto.js";
-import { ICreateEventReviewRepository } from "./interfaces/index.js";
+import { ICreateEventReviewRepository } from "../../event/repositories/interfaces/index.js";
+import { InputCreateEventReviewDTO } from "../dtos/evaluations.dtos.js";
 
 export class CreateEventReviewRepository implements ICreateEventReviewRepository {
   async execute(

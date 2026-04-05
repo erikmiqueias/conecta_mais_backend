@@ -1,6 +1,6 @@
 import { prisma } from "@shared/lib/db.js";
 
-import { IGetUserReviewRepository } from "./interfaces/index.js";
+import { IGetUserReviewRepository } from "../../event/repositories/interfaces/index.js";
 
 export class GetUserReviewRepository implements IGetUserReviewRepository {
   async execute(eventId: string, userId: string): Promise<boolean> {
