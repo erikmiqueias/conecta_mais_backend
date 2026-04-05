@@ -1,3 +1,4 @@
+export { ICancelEventUseCase } from "./cancel-event.interface.js";
 export { ICreateEventUseCase } from "./create-event.interface.js";
 export { IDeleteEventUseCase } from "./delete-event.interface.js";
 export { IEventSubscriptionUseCase } from "./event-subscription.interface.js";
@@ -7,4 +8,3 @@ export { IGetOrganizerEventsUseCase } from "./get-organizer-events.interface.js"
 export { IGetUserSubscriptionsUseCase } from "./get-user-subscriptions.interface.js";
 export { IRemoveParticipantFromEventUseCase } from "./remove-participant-from-event.interface.js";
 export { IUpdateEventUseCase } from "./update-event.interface.js";
-export { ICancelEventUseCase } from "./update-event-status.interface.js";

@@ -69,3 +69,15 @@ export class OrganizerCannotReviewOwnEventError extends Error {
     super("Organizer cannot review own event");
   }
 }
+
+export class EventAlreadyCanceledError extends Error {
+  constructor() {
+    super("Event already cancelled");
+  }
+}
+
+export class CannotCancelPastEventError extends Error {
+  constructor() {
+    super("Cannot cancel past event");
+  }
+}
