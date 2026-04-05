@@ -27,19 +27,20 @@ model User {
 }
 
 model Event {
-  id            String    @id @default(uuid())
+  id            String      @id @default(uuid())
   name          String
-  description   String    @db.Text
+  description   String      @db.Text
   eventType     EventType
   eventAddress  String
-  latitude      Decimal   @db.Decimal(10, 7)
-  longitude     Decimal   @db.Decimal(10, 7)
-  accessCode    String?   @unique
-  startDateTime DateTime  @db.Timestamptz()
-  endDateTime   DateTime  @db.Timestamptz()
-  createdAt     DateTime  @default(now()) @db.Timestamptz()
-  updatedAt     DateTime  @updatedAt @db.Timestamptz()
-  deletedAt     DateTime? @db.Timestamptz()
+  latitude      Decimal     @db.Decimal(10, 7)
+  longitude     Decimal     @db.Decimal(10, 7)
+  accessCode    String?     @unique
+  status        EventStatus @default(SCHEDULED)
+  startDateTime DateTime    @db.Timestamptz()
+  endDateTime   DateTime    @db.Timestamptz()
+  createdAt     DateTime    @default(now()) @db.Timestamptz()
+  updatedAt     DateTime    @updatedAt @db.Timestamptz()
+  deletedAt     DateTime?   @db.Timestamptz()
 
   organizerId String
   organizer   User   @relation(fields: [organizerId], references: [id], onDelete: Restrict)
@@ -81,4 +82,9 @@ enum Role {
 enum EventType {
   PRIVATE
   PUBLIC
+}
+
+enum EventStatus {
+  SCHEDULED
+  CANCELED
 }
