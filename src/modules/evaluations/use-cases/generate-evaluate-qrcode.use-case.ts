@@ -37,7 +37,7 @@ export class GenerateEvaluateQrCodeUseCase implements IGenerateEvaluateQrCodeUse
       );
     }
 
-    const frontendReactEvaluateURL = `http://localhost:5173/evaluate/${eventId}`;
+    const frontendReactEvaluateURL = `${process.env.FRONTEND_URL}/evaluate/${eventId}`;
     const qrCodeImageBase64 = await QRCode.toDataURL(frontendReactEvaluateURL);
 
     return qrCodeImageBase64;
