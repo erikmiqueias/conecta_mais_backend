@@ -1,18 +1,4 @@
 import { ErrorSchema } from "@schemas/error.schema.js";
-import {
-  AddressNotFoundError,
-  CannotCancelPastEventError,
-  CoordinatesNotFoundError,
-  EventAlreadyCanceledError,
-  EventAlreadyReopenedError,
-  EventNotAuthorizedError,
-  EventNotCanceledError,
-  EventNotFoundError,
-  OSMProviderError,
-  UserAlreadySubscribedError,
-  UserNotFoundError,
-  UserNotSubscribedError,
-} from "@shared/errors/errors.js";
 import { verifyOptionalJwt } from "@shared/middlewares/verify-optional-jwt.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
@@ -29,6 +15,7 @@ import {
   makeGetUserSubscriptionsUseCase,
   makeRemoveParticipantFromEventUseCase,
   makeReopenEventUseCase,
+  makeShareEventUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
 import {
@@ -68,45 +55,9 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const userId = request.user.sub;
       const createEventUseCase = makeCreateEventUseCase();
+      const event = await createEventUseCase.execute(request.body, userId);
 
-      try {
-        const event = await createEventUseCase.execute(request.body, userId);
-        return reply.status(201).send(event);
-      } catch (error) {
-        if (error instanceof UserNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "USER_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof AddressNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "ADDRESS_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof CoordinatesNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "COORDINATES_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof OSMProviderError) {
-          return reply.status(502).send({
-            message: error.message,
-            code: "GEOCODING_SERVICE_ERROR",
-          });
-        }
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply.status(201).send(event);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -133,24 +84,9 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const { eventId } = request.params;
       const deleteEventUseCase = makeDeleteEventUseCase();
+      await deleteEventUseCase.execute(eventId);
 
-      try {
-        await deleteEventUseCase.execute(eventId);
-        return reply.status(204).send(null);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "NOT_FOUND",
-          });
-        }
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply.status(204).send(null);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -171,25 +107,10 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const organizerId = request.user.sub;
-
       const getOrganizerEventsUseCase = makeGetOrganizerEventsUseCase();
-      try {
-        const events = await getOrganizerEventsUseCase.execute(organizerId);
-        return reply.status(200).send(events);
-      } catch (error) {
-        if (error instanceof UserNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "USER_NOT_FOUND",
-          });
-        }
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      const events = await getOrganizerEventsUseCase.execute(organizerId);
+
+      return reply.status(200).send(events);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -209,24 +130,9 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const loggedUser = request.user?.sub || undefined;
       const getAvailableEventsUseCase = makeGetAvailableEventsUseCase();
+      const events = await getAvailableEventsUseCase.execute(loggedUser);
 
-      try {
-        const events = await getAvailableEventsUseCase.execute(loggedUser);
-        return reply.status(200).send(events);
-      } catch (error) {
-        if (error instanceof UserNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "USER_NOT_FOUND",
-          });
-        }
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply.status(200).send(events);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -254,35 +160,14 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const { eventId } = request.params;
       const userId = request.user.sub;
-
       const updateEventUseCase = makeUpdateEventUseCase();
-      try {
-        const updatedEvent = await updateEventUseCase.execute(
-          eventId,
-          userId,
-          request.body,
-        );
-        return reply.status(200).send(updatedEvent);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
-        if (error instanceof EventNotAuthorizedError) {
-          return reply.status(403).send({
-            message: error.message,
-            code: "EVENT_NOT_AUTHORIZED",
-          });
-        }
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      const updatedEvent = await updateEventUseCase.execute(
+        eventId,
+        userId,
+        request.body,
+      );
+
+      return reply.status(200).send(updatedEvent);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -297,8 +182,14 @@ export const eventRoutes = (app: FastifyInstance) => {
           error: "Event ID must be a valid UUID",
         }),
       }),
+      body: z.object({
+        accessCode: z.string().trim().min(1).optional(),
+      }),
       response: {
-        201: InputEventSubscriptionSchema.omit({ eventId: true, userId: true }),
+        201: InputEventSubscriptionSchema.omit({
+          eventId: true,
+          userId: true,
+        }),
         400: ErrorSchema,
         401: ErrorSchema,
         404: ErrorSchema,
@@ -306,34 +197,16 @@ export const eventRoutes = (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
-
     handler: async (request, reply) => {
       const userId = request.user.sub;
-
       const eventSubscriptionUseCase = makeEventSubscriptionUseCase();
+      const subscription = await eventSubscriptionUseCase.execute(
+        request.params.eventId,
+        userId,
+        request.body.accessCode,
+      );
 
-      try {
-        const subscription = await eventSubscriptionUseCase.execute(
-          request.params.eventId,
-          userId,
-        );
-
-        return reply.status(201).send(subscription);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof UserAlreadySubscribedError) {
-          return reply.status(409).send({
-            message: error.message,
-            code: "USER_ALREADY_SUBSCRIBED",
-          });
-        }
-      }
+      return reply.status(201).send(subscription);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -360,37 +233,13 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const eventId = request.params.eventId;
       const userId = request.user.sub;
-
       const getEventParticipantsUseCase = makeGetEventParticipantsUseCase();
+      const participants = await getEventParticipantsUseCase.execute(
+        eventId,
+        userId,
+      );
 
-      try {
-        const participants = await getEventParticipantsUseCase.execute(
-          eventId,
-          userId,
-        );
-        return reply.status(200).send(participants);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof EventNotAuthorizedError) {
-          return reply.status(403).send({
-            message: error.message,
-            code: "EVENT_NOT_AUTHORIZED",
-          });
-        }
-
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply.status(200).send(participants);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -417,35 +266,11 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const eventId = request.params.eventId;
       const userId = request.user.sub;
-
       const removeParticipantFromEventUseCase =
         makeRemoveParticipantFromEventUseCase();
-      try {
-        await removeParticipantFromEventUseCase.execute(eventId, userId);
+      await removeParticipantFromEventUseCase.execute(eventId, userId);
 
-        return reply.status(204).send(null);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof UserNotSubscribedError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "USER_NOT_SUBSCRIBED",
-          });
-        }
-
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply.status(204).send(null);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -464,20 +289,10 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const userId = request.user.sub;
-
       const getUserSubscriptionsUseCase = makeGetUserSubscriptionsUseCase();
+      const subscriptions = await getUserSubscriptionsUseCase.execute(userId);
 
-      try {
-        const subscriptions = await getUserSubscriptionsUseCase.execute(userId);
-        return reply.status(200).send(subscriptions);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply.status(200).send(subscriptions);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -505,39 +320,11 @@ export const eventRoutes = (app: FastifyInstance) => {
       const eventId = request.params.eventId;
       const organizerId = request.user.sub;
 
-      try {
-        const cancelEventUseCase = makeCancelEventUseCase();
+      const cancelEventUseCase = makeCancelEventUseCase();
 
-        await cancelEventUseCase.execute(organizerId, eventId);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
+      await cancelEventUseCase.execute(organizerId, eventId);
 
-        if (error instanceof EventNotAuthorizedError) {
-          return reply.status(403).send({
-            message: error.message,
-            code: "EVENT_NOT_AUTHORIZED",
-          });
-        }
-
-        if (error instanceof EventAlreadyCanceledError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "EVENT_ALREADY_CANCELED",
-          });
-        }
-
-        if (error instanceof CannotCancelPastEventError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "CANNOT_CANCEL_PAST_EVENT",
-          });
-        }
-      }
+      return reply.status(204).send(null);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -564,40 +351,45 @@ export const eventRoutes = (app: FastifyInstance) => {
     handler: async (request, reply) => {
       const eventId = request.params.eventId;
       const organizerId = request.user.sub;
+      const reopenEventUseCase = makeReopenEventUseCase();
+      await reopenEventUseCase.execute(eventId, organizerId);
 
-      try {
-        const reopenEventUseCase = makeReopenEventUseCase();
+      return reply.status(204).send(null);
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/events/:eventId/share",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        200: z.object({
+          shareLink: z
+            .url()
+            .startsWith("http://")
+            .or(z.url().startsWith("https://")),
+        }),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const eventId = request.params.eventId;
+      const organizerId = request.user.sub;
+      const shareEventUseCase = makeShareEventUseCase();
 
-        await reopenEventUseCase.execute(eventId, organizerId);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof EventNotAuthorizedError) {
-          return reply.status(403).send({
-            message: error.message,
-            code: "EVENT_NOT_AUTHORIZED",
-          });
-        }
-
-        if (error instanceof EventNotCanceledError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "EVENT_NOT_CANCELED",
-          });
-        }
-
-        if (error instanceof EventAlreadyReopenedError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "EVENT_ALREADY_REOPENED",
-          });
-        }
-      }
+      const shareLink = await shareEventUseCase.execute(eventId, organizerId);
+      return reply.status(200).send({ shareLink });
     },
   });
 };

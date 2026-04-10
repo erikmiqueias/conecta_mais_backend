@@ -1,4 +1,4 @@
-import { buildApp } from "./infra/app.js";
+import { buildApp } from "./infra/http/app.js";
 async function startServer() {
   try {
     const app = await buildApp();

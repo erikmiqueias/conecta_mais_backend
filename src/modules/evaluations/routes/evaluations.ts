@@ -1,11 +1,4 @@
 import { ErrorSchema } from "@schemas/error.schema.js";
-import {
-  CannotEvaluateCanceledEventError,
-  EvaluationNotDisposibleError,
-  EventNotFoundError,
-  OrganizerCannotReviewOwnEventError,
-  UserAlreadyReviewedError,
-} from "@shared/errors/errors.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
@@ -45,45 +38,8 @@ export const evaluationsRoutes = (app: FastifyInstance) => {
 
       const createEventReviewUseCase = makeCreateEventReviewUseCase();
 
-      try {
-        await createEventReviewUseCase.execute(eventId, userId, request.body);
-        return reply.status(204).send(null);
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
-
-        if (error instanceof UserAlreadyReviewedError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "USER_ALREADY_REVIEWED",
-          });
-        }
-
-        if (error instanceof EvaluationNotDisposibleError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "EVALUATION_NOT_DISPOSIBLE",
-          });
-        }
-
-        if (error instanceof OrganizerCannotReviewOwnEventError) {
-          return reply.status(403).send({
-            message: error.message,
-            code: "ORGANIZER_CANNOT_REVIEW_OWN_EVENT",
-          });
-        }
-
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      await createEventReviewUseCase.execute(eventId, userId, request.body);
+      return reply.status(204).send(null);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -114,44 +70,16 @@ export const evaluationsRoutes = (app: FastifyInstance) => {
       const eventId = request.params.eventId;
 
       const generateEvaluateQrCodeUseCase = makeGenerateEvaluateQrCodeUseCase();
-      try {
-        const qrCode = await generateEvaluateQrCodeUseCase.execute(
-          eventId,
-          organizerId,
-        );
 
-        return reply
-          .status(200)
-          .send({ qrCode })
-          .header("Content-Type", "image/png");
-      } catch (error) {
-        if (error instanceof EventNotFoundError) {
-          return reply.status(404).send({
-            message: error.message,
-            code: "EVENT_NOT_FOUND",
-          });
-        }
+      const qrCode = await generateEvaluateQrCodeUseCase.execute(
+        eventId,
+        organizerId,
+      );
 
-        if (error instanceof EvaluationNotDisposibleError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "EVALUATION_NOT_DISPOSIBLE",
-          });
-        }
-
-        if (error instanceof CannotEvaluateCanceledEventError) {
-          return reply.status(400).send({
-            message: error.message,
-            code: "EVALUATION_NOT_DISPOSIBLE",
-          });
-        }
-        const errorMessage =
-          error instanceof Error ? error.message : "An unknown error occurred";
-        return reply.status(500).send({
-          message: errorMessage,
-          code: "INTERNAL_SERVER_ERROR",
-        });
-      }
+      return reply
+        .status(200)
+        .send({ qrCode })
+        .header("Content-Type", "image/png");
     },
   });
 };
