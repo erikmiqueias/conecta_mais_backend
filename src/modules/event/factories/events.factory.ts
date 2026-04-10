@@ -28,6 +28,7 @@ import {
   GetUserSubscriptionsUseCase,
   RemoveParticipantFromEventUseCase,
   ReopenEventUseCase,
+  ShareEventUseCase,
   UpdateEventUseCase,
 } from "../use-cases/index.js";
 
@@ -147,4 +148,10 @@ export const makeReopenEventUseCase = () => {
     updateEventStatusRepository,
   );
   return reopenEventUseCase;
+};
+
+export const makeShareEventUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const shareEventUseCase = new ShareEventUseCase(getEventByIdRepository);
+  return shareEventUseCase;
 };

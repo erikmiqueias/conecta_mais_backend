@@ -1,4 +1,5 @@
 import {
+  AccessCodeIsRequiredError,
   EventNotFoundError,
   UserAlreadySubscribedError,
 } from "@shared/errors/errors.js";
@@ -20,6 +21,7 @@ export class EventSubscriptionUseCase implements IEventSubscriptionUseCase {
   async execute(
     eventId: string,
     userId: string,
+    accessCode?: string,
   ): Promise<OutputEventSubscriptionDTO> {
     const [eventExists, isSubscribe] = await Promise.all([
       this.getEventByIdRepository.execute(eventId),
@@ -32,6 +34,12 @@ export class EventSubscriptionUseCase implements IEventSubscriptionUseCase {
       throw new UserAlreadySubscribedError();
 
     if (isSubscribe) throw new UserAlreadySubscribedError();
+
+    if (
+      eventExists.eventType === "PRIVATE" &&
+      accessCode !== eventExists.accessCode
+    )
+      throw new AccessCodeIsRequiredError();
 
     return await this.eventSubscriptionRepository.execute(eventId, userId);
   }

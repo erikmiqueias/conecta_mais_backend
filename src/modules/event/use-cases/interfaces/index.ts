@@ -8,4 +8,5 @@ export { IGetOrganizerEventsUseCase } from "./get-organizer-events.interface.js"
 export { IGetUserSubscriptionsUseCase } from "./get-user-subscriptions.interface.js";
 export { IRemoveParticipantFromEventUseCase } from "./remove-participant-from-event.interface.js";
 export { IReopenEventUseCase } from "./reopen-event.interface.js";
+export { IShareEventUseCase } from "./share-event.interface.js";
 export { IUpdateEventUseCase } from "./update-event.interface.js";
