@@ -1,3 +1,5 @@
+import { BullMQMailQueueProvider } from "@shared/providers/mail-queue-provider.js";
+
 import {
   CreateUserRepository,
   DeleteUserRepository,
@@ -25,9 +27,11 @@ export const makeDeleteUserUseCase = () => {
 export const makeCreateUserUseCase = () => {
   const getUserByEmailRepository = new GetUserByEmailRepository();
   const createUserRepository = new CreateUserRepository();
+  const mailQueueProvider = new BullMQMailQueueProvider();
   const createUserUseCase = new CreateUserUseCase(
     createUserRepository,
     getUserByEmailRepository,
+    mailQueueProvider,
   );
   return createUserUseCase;
 };

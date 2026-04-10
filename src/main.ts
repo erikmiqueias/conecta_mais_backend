@@ -1,4 +1,7 @@
+import "@infra/queue/worker.js";
+
 import { buildApp } from "./infra/http/app.js";
+
 async function startServer() {
   try {
     const app = await buildApp();
