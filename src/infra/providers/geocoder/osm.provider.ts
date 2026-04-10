@@ -3,8 +3,7 @@ import {
   CoordinatesNotFoundError,
   OSMProviderError,
 } from "@shared/errors/errors.js";
-
-import { IGeocoderProvider } from "./interfaces/osm.interface.js";
+import { IGeocoderProvider } from "@shared/providers/geocoder/osm.interface.js";
 
 interface NominatimResponse {
   lat: string;

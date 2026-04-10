@@ -1,9 +1,8 @@
-import { Queue } from "bullmq";
-
 import {
   EnqueueMailProvider,
   IMailQueueProvider,
-} from "./interfaces/mail-queue-provider.interface.js";
+} from "@shared/providers/queue/mail-queue-provider.interface.js";
+import { Queue } from "bullmq";
 
 export class BullMQMailQueueProvider implements IMailQueueProvider {
   private emailQueue: Queue;

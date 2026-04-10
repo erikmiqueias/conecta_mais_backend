@@ -1,5 +1,5 @@
+import { OpenStreetMapProvider } from "@infra/providers/geocoder/osm.provider.js";
 import { GetUserByIdRepository } from "@modules/user/repositories/index.js";
-import { OpenStreetMapProvider } from "@shared/providers/osm.provider.js";
 
 import {
   EventSubscriptionRepository,

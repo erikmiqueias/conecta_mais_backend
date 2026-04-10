@@ -1,4 +1,4 @@
-import { BullMQMailQueueProvider } from "@shared/providers/mail-queue-provider.js";
+import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
 
 import {
   CreateUserRepository,

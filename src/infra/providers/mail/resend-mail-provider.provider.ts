@@ -1,9 +1,8 @@
-import { Resend } from "resend";
-
 import {
   IMailProvider,
   SendMailDTO,
-} from "./interfaces/mail-provider.interface.js";
+} from "@shared/providers/mail/mail-provider.interface.js";
+import { Resend } from "resend";
 
 export class ResendMailProvider implements IMailProvider {
   private resend: Resend;

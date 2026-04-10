@@ -1,4 +1,4 @@
-import "@infra/queue/worker.js";
+import "@infra/providers/queue/worker.js";
 
 import { buildApp } from "./infra/http/app.js";
 

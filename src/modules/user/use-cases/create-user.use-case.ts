@@ -1,5 +1,5 @@
 import { EmailAlreadyExistsError } from "@shared/errors/errors.js";
-import { IMailQueueProvider } from "@shared/providers/interfaces/mail-queue-provider.interface.js";
+import { IMailQueueProvider } from "@shared/providers/queue/mail-queue-provider.interface.js";
 import bcrypt from "bcryptjs";
 
 import { InputCreateUserDTO } from "../dtos/user.dto.js";

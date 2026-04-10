@@ -1,4 +1,4 @@
-import { ResendMailProvider } from "@shared/providers/resend-mail-provider.provider.js";
+import { ResendMailProvider } from "@infra/providers/mail/resend-mail-provider.provider.js";
 import { Worker } from "bullmq";
 
 console.log("👷‍♂️ [Worker] Iniciando o processador de e-mails...");

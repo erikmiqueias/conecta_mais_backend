@@ -2,7 +2,7 @@ import {
   EventNotAuthorizedError,
   EventNotFoundError,
 } from "@shared/errors/errors.js";
-import { IGeocoderProvider } from "@shared/providers/interfaces/osm.interface.js";
+import { IGeocoderProvider } from "@shared/providers/geocoder/osm.interface.js";
 
 import {
   InputUpdateEventDTO,
