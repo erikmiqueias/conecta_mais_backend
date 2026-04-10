@@ -23,6 +23,6 @@ export class BullMQMailQueueProvider implements IMailQueueProvider {
         delay: 5000,
       },
     });
-    console.log(`📦 [Fila] E-mail para ${data.to} adicionado à fila!`);
+    console.log(`📦 [Queue] E-mail to ${data.to} has been added to the queue!`);
   }
 }

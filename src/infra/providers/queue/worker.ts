@@ -1,7 +1,7 @@
 import { ResendMailProvider } from "@infra/providers/mail/resend-mail-provider.provider.js";
 import { Worker } from "bullmq";
 
-console.log("👷‍♂️ [Worker] Iniciando o processador de e-mails...");
+console.log("👷‍♂️ [Worker] Starting e-mail processor...");
 
 const mailProvider = new ResendMailProvider();
 
@@ -10,7 +10,7 @@ export const emailWorker = new Worker(
   async (job) => {
     const { to, subject, body } = job.data;
 
-    console.log(`⏳ [Worker] Processando envio para: ${to}...`);
+    console.log(`⏳ [Worker] Processing e-mail to: ${to}...`);
 
     try {
       await mailProvider.sendMail({
@@ -19,9 +19,9 @@ export const emailWorker = new Worker(
         body,
       });
 
-      console.log(`✅ [Worker] E-mail enviado com sucesso para: ${to}`);
+      console.log(`✅ [Worker] E-mail successfully sent to: ${to}`);
     } catch (error) {
-      console.error(`❌ [Worker] Falha ao enviar e-mail para ${to}:`, error);
+      console.error(`❌ [Worker] Error sending e-mail to ${to}:`, error);
       throw error;
     }
   },
@@ -34,7 +34,5 @@ export const emailWorker = new Worker(
 );
 
 emailWorker.on("failed", (job, err) => {
-  console.log(
-    `⚠️ Job ${job?.id} falhou e voltará para a fila. Motivo: ${err.message}`,
-  );
+  console.log(`⚠️ Job ${job?.id} failed with error: ${err.message}`);
 });
