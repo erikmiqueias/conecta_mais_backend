@@ -6,10 +6,9 @@ import { InputCreateUserDTO } from "../dtos/user.dto.js";
 import {
   ICreateUserRepository,
   IGetUserByEmailRepository,
-} from "../repositories/interfaces/index.js";
-import { ICreateUserUseCase } from "./interfaces/index.js";
+} from "../repositories/index.js";
 
-export class CreateUserUseCase implements ICreateUserUseCase {
+export class CreateUserUseCase {
   constructor(
     private readonly createUserRepository: ICreateUserRepository,
     private readonly getUserByEmailRepository: IGetUserByEmailRepository,

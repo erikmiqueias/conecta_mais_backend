@@ -1,12 +1,12 @@
-import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
-
 import {
   CreateUserRepository,
   DeleteUserRepository,
   GetUserByEmailRepository,
   GetUserByIdRepository,
   UpdateUserRepository,
-} from "../repositories/index.js";
+} from "@infra/database/prisma/repositories/user/index.js";
+import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
+
 import {
   CreateUserUseCase,
   DeleteUserUseCase,

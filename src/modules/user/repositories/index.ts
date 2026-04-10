@@ -1,5 +1,6 @@
-export { CreateUserRepository } from "./create-user.repo.js";
-export { DeleteUserRepository } from "./delete-user.repo.js";
-export { GetUserByEmailRepository } from "./get-user-by-email.repo.js";
-export { GetUserByIdRepository } from "./get-user-by-id.repo.js";
-export { UpdateUserRepository } from "./update-user.repo.js";
+// Repositories Barrel
+export { ICreateUserRepository } from "./create-user.interface.js";
+export { IDeleteUserRepository } from "./delete-user.interface.js";
+export { IGetUserByEmailRepository } from "./get-user-by-email.interface.js";
+export { IGetUserByIdRepository } from "./get-user-by-id.interface.js";
+export { IUpdateUserRepository } from "./update-user.interface.js";

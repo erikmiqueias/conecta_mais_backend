@@ -5,11 +5,10 @@ import {
   EventNotFoundError,
 } from "@shared/errors/errors.js";
 
-import { IGetEventByIdRepository } from "../repositories/interfaces/get-event-by-id.interface.js";
-import { IUpdateEventStatusRepository } from "../repositories/interfaces/update-event-status.interface.js";
-import { ICancelEventUseCase } from "./interfaces/cancel-event.interface.js";
+import { IGetEventByIdRepository } from "../repositories/index.js";
+import { IUpdateEventStatusRepository } from "../repositories/index.js";
 
-export class CancelEventUseCase implements ICancelEventUseCase {
+export class CancelEventUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
     private readonly updateEventStatusRepository: IUpdateEventStatusRepository,

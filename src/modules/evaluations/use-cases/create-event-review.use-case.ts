@@ -1,3 +1,6 @@
+import { checkEvaluationWindow } from "@modules/evaluations/utils/evaluation-window.js";
+import { IGetEventByIdRepository } from "@modules/event/repositories/get-event-by-id.interface.js";
+import { IGetUserSubscribeRepository } from "@modules/event/repositories/get-user-subscribe.interface.js";
 import {
   EvaluationNotDisposibleError,
   EventNotFoundError,
@@ -5,16 +8,12 @@ import {
   UserAlreadyReviewedError,
   UserNotSubscribedError,
 } from "@shared/errors/errors.js";
-import { checkEvaluationWindow } from "@shared/utils/evaluation-window.js";
 
-import { IGetEventByIdRepository } from "../../event/repositories/interfaces/get-event-by-id.interface.js";
-import { IGetUserSubscribeRepository } from "../../event/repositories/interfaces/get-user-subscribe.interface.js";
-import { ICreateEventReviewUseCase } from "../../event/use-cases/interfaces/create-event-review.interface.js";
 import { InputCreateEventReviewDTO } from "../dtos/evaluations.dtos.js";
-import { ICreateEventReviewRepository } from "../repositories/interfaces/create-event-review.interface.js";
-import { IGetUserReviewRepository } from "../repositories/interfaces/get-user-review.interface.js";
+import { ICreateEventReviewRepository } from "../repositories/create-event-review.interface.js";
+import { IGetUserReviewRepository } from "../repositories/get-user-review.interface.js";
 
-export class CreateEventReviewUseCase implements ICreateEventReviewUseCase {
+export class CreateEventReviewUseCase {
   constructor(
     private readonly createEventReviewRepository: ICreateEventReviewRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,

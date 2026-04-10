@@ -6,10 +6,9 @@ import {
 import {
   IDeleteEventRepository,
   IGetEventByIdRepository,
-} from "../repositories/interfaces/index.js";
-import { IDeleteEventUseCase } from "./interfaces/index.js";
+} from "../repositories/index.js";
 
-export class DeleteEventUseCase implements IDeleteEventUseCase {
+export class DeleteEventUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
     private readonly deleteEventRepository: IDeleteEventRepository,

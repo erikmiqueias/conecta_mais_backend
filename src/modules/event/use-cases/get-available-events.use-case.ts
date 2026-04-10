@@ -1,11 +1,10 @@
-import { IGetUserByIdRepository } from "@modules/user/repositories/interfaces/index.js";
+import { IGetUserByIdRepository } from "@modules/user/repositories/index.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
 
 import { OutputGetAvailableEventsDTO } from "../dtos/event.dto.js";
-import { IGetAvailableEventsRepository } from "../repositories/interfaces/index.js";
-import { IGetAvailableEventsUseCase } from "./interfaces/index.js";
+import { IGetAvailableEventsRepository } from "../repositories/index.js";
 
-export class GetAvailableEventsUseCase implements IGetAvailableEventsUseCase {
+export class GetAvailableEventsUseCase {
   constructor(
     private readonly getAvailableEventsRepository: IGetAvailableEventsRepository,
     private readonly getUserByIdRepository: IGetUserByIdRepository,

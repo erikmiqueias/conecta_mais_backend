@@ -1,16 +1,14 @@
-import { IGetEventByIdRepository } from "@modules/event/repositories/interfaces/get-event-by-id.interface.js";
+import { checkEvaluationWindow } from "@modules/evaluations/utils/evaluation-window.js";
+import { IGetEventByIdRepository } from "@modules/event/repositories/get-event-by-id.interface.js";
 import {
   CannotEvaluateCanceledEventError,
   EvaluationNotDisposibleError,
   EventNotAuthorizedError,
   EventNotFoundError,
 } from "@shared/errors/errors.js";
-import { checkEvaluationWindow } from "@shared/utils/evaluation-window.js";
 import QRCode from "qrcode";
 
-import { IGenerateEvaluateQrCodeUseCase } from "./interfaces/generate-evaluate-qrcode.interface.js";
-
-export class GenerateEvaluateQrCodeUseCase implements IGenerateEvaluateQrCodeUseCase {
+export class GenerateEvaluateQrCodeUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
   ) {}

@@ -9,8 +9,6 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
-import { errorHandler } from "./error-handler.js";
-
 export const fastifySetupConfig = async (app: FastifyInstance) => {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
@@ -111,7 +109,5 @@ export const fastifySetupConfig = async (app: FastifyInstance) => {
         yaml: "/docs.yaml",
       },
     });
-
-    app.setErrorHandler(errorHandler);
   }
 };

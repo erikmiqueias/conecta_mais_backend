@@ -11,11 +11,10 @@ import {
 import {
   IGetEventByIdRepository,
   IUpdateEventRepository,
-} from "../repositories/interfaces/index.js";
+} from "../repositories/index.js";
 import { generateAccessCode } from "../utils/generate-access-code.js";
-import { IUpdateEventUseCase } from "./interfaces/index.js";
 
-export class UpdateEventUseCase implements IUpdateEventUseCase {
+export class UpdateEventUseCase {
   constructor(
     private updateEventRepository: IUpdateEventRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,

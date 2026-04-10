@@ -9,10 +9,9 @@ import {
   IEventSubscriptionRepository,
   IGetEventByIdRepository,
   IGetUserSubscribeRepository,
-} from "../repositories/interfaces/index.js";
-import { IEventSubscriptionUseCase } from "./interfaces/index.js";
+} from "../repositories/index.js";
 
-export class EventSubscriptionUseCase implements IEventSubscriptionUseCase {
+export class EventSubscriptionUseCase {
   constructor(
     private readonly eventSubscriptionRepository: IEventSubscriptionRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,

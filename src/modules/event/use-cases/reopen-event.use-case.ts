@@ -6,11 +6,12 @@ import {
   EventNotFoundError,
 } from "@shared/errors/errors.js";
 
-import { IGetEventByIdRepository } from "../repositories/interfaces/get-event-by-id.interface.js";
-import { IUpdateEventStatusRepository } from "../repositories/interfaces/update-event-status.interface.js";
-import { IReopenEventUseCase } from "./interfaces/reopen-event.interface.js";
+import {
+  IGetEventByIdRepository,
+  IUpdateEventStatusRepository,
+} from "../repositories/index.js";
 
-export class ReopenEventUseCase implements IReopenEventUseCase {
+export class ReopenEventUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
     private readonly updateEventStatusRepository: IUpdateEventStatusRepository,

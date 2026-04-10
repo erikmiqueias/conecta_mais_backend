@@ -7,10 +7,9 @@ import {
   IGetEventByIdRepository,
   IGetUserSubscribeRepository,
   IRemoveParticipantFromEventRepository,
-} from "../repositories/interfaces/index.js";
-import { IRemoveParticipantFromEventUseCase } from "./interfaces/index.js";
+} from "../repositories/index.js";
 
-export class RemoveParticipantFromEventUseCase implements IRemoveParticipantFromEventUseCase {
+export class RemoveParticipantFromEventUseCase {
   constructor(
     private readonly removeParticipantFromEventRepository: IRemoveParticipantFromEventRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,

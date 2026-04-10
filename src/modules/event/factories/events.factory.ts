@@ -1,6 +1,3 @@
-import { OpenStreetMapProvider } from "@infra/providers/geocoder/osm.provider.js";
-import { GetUserByIdRepository } from "@modules/user/repositories/index.js";
-
 import {
   EventSubscriptionRepository,
   GetEventParticipantsRepository,
@@ -8,7 +5,7 @@ import {
   GetUserSubscriptionsRepository,
   RemoveParticipantFromEventRepository,
   UpdateEventStatusRepository,
-} from "../repositories/index.js";
+} from "@infra/database/prisma/repositories/event/index.js";
 import {
   CreateEventRepository,
   DeleteEventRepository,
@@ -16,7 +13,9 @@ import {
   GetEventByIdRepository,
   GetOrganizerEventsRepository,
   UpdateEventRepository,
-} from "../repositories/index.js";
+} from "@infra/database/prisma/repositories/event/index.js";
+import { GetUserByIdRepository } from "@infra/database/prisma/repositories/user/get-user-by-id.repo.js";
+import { OpenStreetMapProvider } from "@infra/providers/geocoder/osm.provider.js";
 import {
   CancelEventUseCase,
   CreateEventUseCase,
@@ -30,7 +29,7 @@ import {
   ReopenEventUseCase,
   ShareEventUseCase,
   UpdateEventUseCase,
-} from "../use-cases/index.js";
+} from "@modules/event/use-cases/index.js";
 
 export const makeCreateEventUseCase = () => {
   const createEventRepository = new CreateEventRepository();

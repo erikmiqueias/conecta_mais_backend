@@ -7,10 +7,9 @@ import { InputUpdateUserDTO, OutputUpdateUserDTO } from "../dtos/user.dto.js";
 import {
   IGetUserByIdRepository,
   IUpdateUserRepository,
-} from "../repositories/interfaces/index.js";
-import { IUpdateUserUseCase } from "./interfaces/index.js";
+} from "../repositories/index.js";
 
-export class UpdateUserUseCase implements IUpdateUserUseCase {
+export class UpdateUserUseCase {
   constructor(
     private readonly updateUserRepository: IUpdateUserRepository,
     private readonly getUserByIdRepository: IGetUserByIdRepository,

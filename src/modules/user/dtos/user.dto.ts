@@ -6,7 +6,7 @@ import {
   UpdateUserInputSchema,
   UpdateUserOutputSchema,
   UserOutputSchema,
-} from "../schemas/user.schema.js";
+} from "../http/schemas/user.schema.js";
 
 export type InputCreateUserDTO = z.infer<typeof CreateUserInputSchema>;
 export type OutputCreateUserDTO = z.infer<typeof UserOutputSchema>;

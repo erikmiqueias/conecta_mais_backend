@@ -9,7 +9,7 @@ import {
   GetUserSubscriptionsOutputSchema,
   UpdateEventInputSchema,
   UpdateEventOutputSchema,
-} from "../schemas/event.schema.js";
+} from "../http/schemas/event.schema.js";
 export type InputCreateEventDTO = z.infer<typeof CreateEventInputSchema>;
 export type OutputCreateEventDTO = z.infer<typeof CreateEventOutputSchema>;
 export type InputGetOrganizerEventsDTO = string;

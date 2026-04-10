@@ -1,8 +1,8 @@
-import { GetEventByIdRepository } from "@modules/event/repositories/get-event-by-id.repo.js";
-import { GetUserSubscribeRepository } from "@modules/event/repositories/get-user-subscribe.repo.js";
+import { CreateEventReviewRepository } from "@infra/database/prisma/repositories/evaluations/create-event-review.repo.js";
+import { GetUserReviewRepository } from "@infra/database/prisma/repositories/evaluations/get-user-review.repo.js";
+import { GetEventByIdRepository } from "@infra/database/prisma/repositories/event/get-event-by-id.repo.js";
+import { GetUserSubscribeRepository } from "@infra/database/prisma/repositories/event/get-user-subscribe.repo.js";
 
-import { CreateEventReviewRepository } from "../repositories/create-event-review.repo.js";
-import { GetUserReviewRepository } from "../repositories/get-user-review.repo.js";
 import { CreateEventReviewUseCase } from "../use-cases/create-event-review.use-case.js";
 import { GenerateEvaluateQrCodeUseCase } from "../use-cases/generate-evaluate-qrcode.use-case.js";
 

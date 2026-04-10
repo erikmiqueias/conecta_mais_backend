@@ -1,0 +1,34 @@
+import { prisma } from "@infra/database/lib/db.js";
+import {
+  InputCreateEventDTO,
+  OutputCreateEventDTO,
+} from "@modules/event/dtos/event.dto.js";
+import { ICreateEventRepository } from "@modules/event/repositories/create-event.interface.js";
+
+export class CreateEventRepository implements ICreateEventRepository {
+  async execute(
+    data: InputCreateEventDTO,
+    organizerId: string,
+  ): Promise<OutputCreateEventDTO> {
+    const event = await prisma.event.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        eventType: data.eventType,
+        eventAddress: data.eventAddress,
+        startDateTime: data.startDateTime,
+        latitude: data.latitude!,
+        longitude: data.longitude!,
+        endDateTime: data.endDateTime,
+        organizerId: organizerId,
+        accessCode: data.accessCode,
+      },
+    });
+    return {
+      ...event,
+      latitude: event.latitude.toNumber(),
+      longitude: event.longitude.toNumber(),
+      accessCode: event.accessCode ?? null,
+    };
+  }
+}

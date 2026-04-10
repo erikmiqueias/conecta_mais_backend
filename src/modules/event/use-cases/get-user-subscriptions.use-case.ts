@@ -1,5 +1,5 @@
 import { OutputGetUserSubscriptionsDTO } from "../dtos/event.dto.js";
-import { IGetUserSubscriptionsRepository } from "../repositories/interfaces/index.js";
+import { IGetUserSubscriptionsRepository } from "../repositories/index.js";
 
 export class GetUserSubscriptionsUseCase implements GetUserSubscriptionsUseCase {
   constructor(

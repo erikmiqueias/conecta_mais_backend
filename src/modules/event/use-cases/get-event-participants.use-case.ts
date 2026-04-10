@@ -7,10 +7,9 @@ import { OutputGetEventParticipantsDTO } from "../dtos/event.dto.js";
 import {
   IGetEventByIdRepository,
   IGetEventParticipantsRepository,
-} from "../repositories/interfaces/index.js";
-import { IGetEventParticipantsUseCase } from "./interfaces/index.js";
+} from "../repositories/index.js";
 
-export class GetEventParticipantsUseCase implements IGetEventParticipantsUseCase {
+export class GetEventParticipantsUseCase {
   constructor(
     private readonly getEventParticipantsRepository: IGetEventParticipantsRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,

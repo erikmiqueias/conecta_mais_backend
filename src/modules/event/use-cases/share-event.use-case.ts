@@ -4,10 +4,9 @@ import {
   EventNotNeededAccessCodeError,
 } from "@shared/errors/errors.js";
 
-import { IGetEventByIdRepository } from "../repositories/interfaces/get-event-by-id.interface.js";
-import { IShareEventUseCase } from "./interfaces/share-event.interface.js";
+import { IGetEventByIdRepository } from "../repositories/index.js";
 
-export class ShareEventUseCase implements IShareEventUseCase {
+export class ShareEventUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
   ) {}
