@@ -174,3 +174,15 @@ export const GetUserSubscriptionsOutputSchema = z.array(
     }),
   }),
 );
+
+export const GetEventByIdOutputSchema = z.object({
+  ...EventCoreSchema,
+  id: z.string(),
+  accessCode: z.string().nullable(),
+  organizerId: z.string(),
+  status: z.enum(["SCHEDULED", "CANCELED"]),
+  organizer: z.object({
+    id: z.string(),
+    email: z.email(),
+  }),
+});

@@ -11,12 +11,22 @@ export class ResendMailProvider implements IMailProvider {
     this.resend = new Resend(process.env.RESEND_API_KEY);
   }
 
-  async sendMail({ body, subject, to }: SendMailDTO): Promise<void> {
+  async sendMail({
+    body,
+    subject,
+    to,
+    attachments,
+  }: SendMailDTO): Promise<void> {
+    console.log(
+      "Anexos chegaram do redis:",
+      attachments ? attachments.length : "Nenhum anexo chegou",
+    );
     const { data: _data, error } = await this.resend.emails.send({
       from: "Conecta + <onboardin@resend.dev>",
       to: [to],
       subject,
       html: body,
+      attachments,
     });
 
     if (error) {

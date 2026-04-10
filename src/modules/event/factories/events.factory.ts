@@ -16,6 +16,7 @@ import {
 } from "@infra/database/prisma/repositories/event/index.js";
 import { GetUserByIdRepository } from "@infra/database/prisma/repositories/user/get-user-by-id.repo.js";
 import { OpenStreetMapProvider } from "@infra/providers/geocoder/osm.provider.js";
+import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
 import {
   CancelEventUseCase,
   CreateEventUseCase,
@@ -35,10 +36,12 @@ export const makeCreateEventUseCase = () => {
   const createEventRepository = new CreateEventRepository();
   const getUserByIdRepository = new GetUserByIdRepository();
   const geoCoderProvider = new OpenStreetMapProvider();
+  const mailProvider = new BullMQMailQueueProvider();
   const createEventUseCase = new CreateEventUseCase(
     createEventRepository,
     getUserByIdRepository,
     geoCoderProvider,
+    mailProvider,
   );
   return createEventUseCase;
 };
@@ -89,10 +92,14 @@ export const makeEventSubscriptionUseCase = () => {
   const eventSubscriptionRepository = new EventSubscriptionRepository();
   const getEventByIdRepository = new GetEventByIdRepository();
   const getUserSubscribeRepository = new GetUserSubscribeRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
+  const mailProvider = new BullMQMailQueueProvider();
   const eventSubscriptionUseCase = new EventSubscriptionUseCase(
     eventSubscriptionRepository,
     getEventByIdRepository,
     getUserSubscribeRepository,
+    getUserByIdRepository,
+    mailProvider,
   );
   return eventSubscriptionUseCase;
 };
@@ -132,9 +139,11 @@ export const makeGetUserSubscriptionsUseCase = () => {
 export const makeCancelEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const updateEventStatusRepository = new UpdateEventStatusRepository();
+  const mailProvider = new BullMQMailQueueProvider();
   const cancelEventUseCase = new CancelEventUseCase(
     getEventByIdRepository,
     updateEventStatusRepository,
+    mailProvider,
   );
   return cancelEventUseCase;
 };
@@ -142,9 +151,11 @@ export const makeCancelEventUseCase = () => {
 export const makeReopenEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const updateEventStatusRepository = new UpdateEventStatusRepository();
+  const mailProvider = new BullMQMailQueueProvider();
   const reopenEventUseCase = new ReopenEventUseCase(
     getEventByIdRepository,
     updateEventStatusRepository,
+    mailProvider,
   );
   return reopenEventUseCase;
 };

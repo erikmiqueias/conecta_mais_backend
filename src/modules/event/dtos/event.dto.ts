@@ -4,6 +4,7 @@ import {
   CreateEventInputSchema,
   CreateEventOutputSchema,
   GetAvailableEventsOutputSchema,
+  GetEventByIdOutputSchema,
   GetEventParticipantsOutputSchema,
   GetOrganizerEventsOutputSchema,
   GetUserSubscriptionsOutputSchema,
@@ -34,3 +35,5 @@ export type OutputGetEventParticipantsDTO = z.infer<
 export type OutputGetUserSubscriptionsDTO = z.infer<
   typeof GetUserSubscriptionsOutputSchema
 >;
+
+export type OutputGetEventByIdDTO = z.infer<typeof GetEventByIdOutputSchema>;

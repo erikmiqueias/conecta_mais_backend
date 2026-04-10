@@ -5,6 +5,7 @@ import {
   EventNotCanceledError,
   EventNotFoundError,
 } from "@shared/errors/errors.js";
+import { IMailQueueProvider } from "@shared/providers/queue/mail-queue-provider.interface.js";
 
 import {
   IGetEventByIdRepository,
@@ -15,6 +16,7 @@ export class ReopenEventUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
     private readonly updateEventStatusRepository: IUpdateEventStatusRepository,
+    private readonly mailProvider: IMailQueueProvider,
   ) {}
   async execute(eventId: string, organizerId: string): Promise<boolean> {
     const eventExists = await this.getEventByIdRepository.execute(eventId);
@@ -40,6 +42,18 @@ export class ReopenEventUseCase {
       throw new CannotReopenPastEventError();
     }
 
-    return await this.updateEventStatusRepository.execute(eventId, "SCHEDULED");
+    const isReopened = await this.updateEventStatusRepository.execute(
+      eventId,
+      "SCHEDULED",
+    );
+
+    if (isReopened) {
+      await this.mailProvider.addJob({
+        to: eventExists.organizer.email,
+        subject: "O evento foi reaberto",
+        body: `O evento ${eventExists.name} foi reaberto`,
+      });
+    }
+    return isReopened;
   }
 }

@@ -8,7 +8,7 @@ const mailProvider = new ResendMailProvider();
 export const emailWorker = new Worker(
   "SendEmailQueue",
   async (job) => {
-    const { to, subject, body } = job.data;
+    const { to, subject, body, attachments } = job.data;
 
     console.log(`⏳ [Worker] Processing e-mail to: ${to}...`);
 
@@ -17,6 +17,7 @@ export const emailWorker = new Worker(
         to,
         subject,
         body,
+        attachments,
       });
 
       console.log(`✅ [Worker] E-mail successfully sent to: ${to}`);

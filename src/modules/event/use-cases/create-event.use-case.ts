@@ -1,6 +1,7 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/index.js";
 import { UserNotFoundError } from "@shared/errors/errors.js";
 import { IGeocoderProvider } from "@shared/providers/geocoder/osm.interface.js";
+import { IMailQueueProvider } from "@shared/providers/queue/mail-queue-provider.interface.js";
 
 import {
   InputCreateEventDTO,
@@ -14,6 +15,7 @@ export class CreateEventUseCase {
     private readonly createEventRepository: ICreateEventRepository,
     private readonly getUserByIdRepository: IGetUserByIdRepository,
     private readonly geoCoderProvider: IGeocoderProvider,
+    private readonly mailProvider: IMailQueueProvider,
   ) {}
 
   async execute(
@@ -53,6 +55,28 @@ export class CreateEventUseCase {
       organizerId: userId,
     };
 
-    return await this.createEventRepository.execute(eventData, userId);
+    const newEvent = await this.createEventRepository.execute(
+      eventData,
+      userId,
+    );
+
+    if (newEvent) {
+      await this.mailProvider.addJob({
+        to: user.email,
+        subject: `Novo evento: ${data.name}`,
+        body: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Olá, ${user.username}!</h2>
+          <p>Um novo evento foi criado com sucesso:</p>
+          <p><strong>${data.name}</strong></p>
+          <p>${data.description}</p>
+          <br/>
+          <p>Um abraço,<br/>Equipe Conecta +</p>
+        </div>
+        `,
+      });
+    }
+
+    return newEvent;
   }
 }
