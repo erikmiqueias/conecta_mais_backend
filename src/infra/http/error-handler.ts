@@ -97,6 +97,13 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
     });
   }
 
+  if (error.name === "InvalidTokenError") {
+    return reply.status(403).send({
+      message: error.message,
+      code: "INVALID_TOKEN",
+    });
+  }
+
   // --- 409 CONFLICT (Conflitos de estado/Duplicidade) ---
 
   if (error.name === "EmailAlreadyExistsError") {

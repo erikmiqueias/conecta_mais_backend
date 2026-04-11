@@ -24,6 +24,8 @@ model User {
   events             Event[]
   eventSubscriptions EventSubscription[]
   eventReviews       EventReview[]
+
+  tokens Token[]
 }
 
 model Event {
@@ -72,6 +74,16 @@ model EventReview {
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventId])
+}
+
+model Token {
+  id     String @id @default(uuid())
+  code   String @unique @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 enum Role {

@@ -42,6 +42,7 @@
     "@scalar/fastify-api-reference": "^1.49.8",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.73.3",
+    "date-fns": "^4.1.0",
     "fastify": "^5.8.2",
     "fastify-type-provider-zod": "^6.1.0",
     "qrcode": "^1.5.4",
