@@ -27,10 +27,13 @@ export const CreateUserInputSchema = z.object({
 });
 
 export const UserOutputSchema = z.object({
-  ...UserCoreSchema,
-  id: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  id: z.uuid({ error: "Invalid UUId" }),
+  email: z.email({
+    message: "Invalid email",
+  }),
+  username: z.string().trim().min(1, {
+    error: "Username is required",
+  }),
 });
 
 export const GetUserByEmailOutputSchema = z.object({
@@ -42,7 +45,18 @@ export const GetUserByEmailOutputSchema = z.object({
 });
 
 export const UpdateUserInputSchema = z.object({
-  ...UserCoreSchema,
+  email: z
+    .email({
+      message: "Invalid email",
+    })
+    .optional(),
+  username: z
+    .string()
+    .trim()
+    .min(1, {
+      error: "Username is required",
+    })
+    .optional(),
 });
 
 export const UpdateUserOutputSchema = z.object({

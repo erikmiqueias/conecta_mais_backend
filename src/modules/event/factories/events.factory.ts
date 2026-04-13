@@ -14,8 +14,10 @@ import {
   GetOrganizerEventsRepository,
   UpdateEventRepository,
 } from "@infra/database/prisma/repositories/event/index.js";
+import { UpdateEventBannerRepository } from "@infra/database/prisma/repositories/event/update-event-banner.repo.js";
 import { GetUserByIdRepository } from "@infra/database/prisma/repositories/user/get-user-by-id.repo.js";
 import { OpenStreetMapProvider } from "@infra/providers/geocoder/osm.provider.js";
+import { CloudinaryProvider } from "@infra/providers/image-upload/cloudinary.provider.js";
 import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
 import {
   CancelEventUseCase,
@@ -31,6 +33,8 @@ import {
   ShareEventUseCase,
   UpdateEventUseCase,
 } from "@modules/event/use-cases/index.js";
+
+import { UpdateEventBannerUseCase } from "../use-cases/update-event-banner.use-case.js";
 
 export const makeCreateEventUseCase = () => {
   const createEventRepository = new CreateEventRepository();
@@ -164,4 +168,16 @@ export const makeShareEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const shareEventUseCase = new ShareEventUseCase(getEventByIdRepository);
   return shareEventUseCase;
+};
+
+export const makeUpdateEventBannerUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const uploadImageProvider = new CloudinaryProvider();
+  const updateEventBannerRepository = new UpdateEventBannerRepository();
+  const updateEventBannerUseCase = new UpdateEventBannerUseCase(
+    updateEventBannerRepository,
+    getEventByIdRepository,
+    uploadImageProvider,
+  );
+  return updateEventBannerUseCase;
 };

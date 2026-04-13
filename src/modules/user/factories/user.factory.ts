@@ -15,7 +15,7 @@ import {
   GetUserByIdUseCase,
   UpdateUserUseCase,
 } from "../use-cases/index.js";
-import { UpdateUserAvatarUseCase } from "../use-cases/upload-avatar.use-case.js";
+import { UpdateUserAvatarUseCase } from "../use-cases/update-user-avatar.use-case.js";
 
 export const makeDeleteUserUseCase = () => {
   const deleteUserRepository = new DeleteUserRepository();

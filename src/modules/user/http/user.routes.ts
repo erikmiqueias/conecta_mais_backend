@@ -115,7 +115,7 @@ export const userRoutes = (app: FastifyInstance) => {
         }),
       }),
       response: {
-        200: UserOutputSchema.omit({ createdAt: true }),
+        200: UserOutputSchema.nullable(),
         400: ErrorSchema,
         401: ErrorSchema,
         404: ErrorSchema,
@@ -126,12 +126,9 @@ export const userRoutes = (app: FastifyInstance) => {
       const userId = request.user.sub;
       const { data } = request.body;
       const updateUserUseCase = makeUpdateUserUseCase();
-      const updatedUser = await updateUserUseCase.execute(userId, {
-        username: data.username!,
-        email: data.email!,
-      });
+      const updatedUser = await updateUserUseCase.execute(userId, data);
 
-      return reply.status(200).send(updatedUser!);
+      return reply.status(200).send(updatedUser);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({

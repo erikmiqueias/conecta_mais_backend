@@ -1,3 +1,4 @@
+import { FileIsRequiredError } from "@shared/errors/errors.js";
 import { verifyOptionalJwt } from "@shared/middlewares/verify-optional-jwt.js";
 import { ErrorSchema } from "@shared/schemas/error.schema.js";
 import { FastifyInstance } from "fastify";
@@ -16,6 +17,7 @@ import {
   makeRemoveParticipantFromEventUseCase,
   makeReopenEventUseCase,
   makeShareEventUseCase,
+  makeUpdateEventBannerUseCase,
   makeUpdateEventUseCase,
 } from "../factories/events.factory.js";
 import {
@@ -390,6 +392,45 @@ export const eventRoutes = (app: FastifyInstance) => {
 
       const shareLink = await shareEventUseCase.execute(eventId, organizerId);
       return reply.status(200).send({ shareLink });
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/:eventId/banner",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      security: [{ bearerAuth: [] }],
+      consumes: ["multipart/form-data"],
+      tags: ["Event"],
+      params: z.object({
+        eventId: z.uuid({
+          error: "Event ID must be a valid UUID",
+        }),
+      }),
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user.sub;
+      const eventId = request.params.eventId;
+
+      const banner = await request.file();
+
+      if (!banner) throw new FileIsRequiredError();
+
+      const bannerBuffer = await banner.toBuffer();
+
+      const updateEventBannerUseCase = makeUpdateEventBannerUseCase();
+
+      await updateEventBannerUseCase.execute(userId, eventId, bannerBuffer);
+
+      return reply.status(204).send(null);
     },
   });
 };

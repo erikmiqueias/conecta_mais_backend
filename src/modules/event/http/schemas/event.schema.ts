@@ -66,8 +66,9 @@ export const CreateEventOutputSchema = z.object({
 
 export const GetOrganizerEventsOutputSchema = z.array(
   z.object({
-    ...EventCoreSchema,
     id: z.string(),
+    ...EventCoreSchema,
+    bannerUrl: z.string().nullable(),
   }),
 );
 

@@ -5,6 +5,7 @@ import {
 
 import { InputUpdateUserDTO, OutputUpdateUserDTO } from "../dtos/user.dto.js";
 import {
+  IGetUserByEmailRepository,
   IGetUserByIdRepository,
   IUpdateUserRepository,
 } from "../repositories/index.js";
@@ -13,7 +14,7 @@ export class UpdateUserUseCase {
   constructor(
     private readonly updateUserRepository: IUpdateUserRepository,
     private readonly getUserByIdRepository: IGetUserByIdRepository,
-    private readonly getUserByEmailRepository: IGetUserByIdRepository,
+    private readonly getUserByEmailRepository: IGetUserByEmailRepository,
   ) {}
   async execute(
     userId: string,
