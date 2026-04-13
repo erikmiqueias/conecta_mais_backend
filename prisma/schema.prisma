@@ -17,6 +17,7 @@ model User {
   username           String
   email              String              @unique
   password           String
+  avatarUrl          String?
   role               Role                @default(USER)
   createdAt          DateTime            @default(now()) @db.Timestamptz()
   updatedAt          DateTime            @updatedAt @db.Timestamptz()
@@ -37,6 +38,7 @@ model Event {
   latitude      Decimal     @db.Decimal(10, 7)
   longitude     Decimal     @db.Decimal(10, 7)
   accessCode    String?     @unique
+  bannerUrl     String?
   status        EventStatus @default(SCHEDULED)
   startDateTime DateTime    @db.Timestamptz()
   endDateTime   DateTime    @db.Timestamptz()

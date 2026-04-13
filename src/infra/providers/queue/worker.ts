@@ -10,8 +10,6 @@ export const emailWorker = new Worker(
   async (job) => {
     const { to, subject, body, attachments } = job.data;
 
-    console.log(`⏳ [Worker] Processing e-mail to: ${to}...`);
-
     try {
       await mailProvider.sendMail({
         to,
@@ -19,8 +17,6 @@ export const emailWorker = new Worker(
         body,
         attachments,
       });
-
-      console.log(`✅ [Worker] E-mail successfully sent to: ${to}`);
     } catch (error) {
       console.error(`❌ [Worker] Error sending e-mail to ${to}:`, error);
       throw error;

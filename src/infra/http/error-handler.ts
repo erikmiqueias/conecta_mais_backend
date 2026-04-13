@@ -201,10 +201,14 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
     });
   }
 
-  // --- 500 INTERNAL SERVER ERROR (Problemas internos do servidor) ---
+  if (error.name === "SendMailError") {
+    return reply.status(502).send({
+      message: error.message,
+      code: "SEND_MAIL_ERROR",
+    });
+  }
 
-  // Imprime o erro no console do servidor para podermos debugar!
-  console.error("🚨 Erro Crítico Não Mapeado:", error);
+  // --- 500 INTERNAL SERVER ERROR (Problemas internos do servidor) ---
 
   return reply.status(500).send({
     message: "Internal server error",

@@ -158,3 +158,10 @@ export class InvalidTokenError extends Error {
     this.name = "InvalidTokenError";
   }
 }
+
+export class SendMailError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SendMailError";
+  }
+}

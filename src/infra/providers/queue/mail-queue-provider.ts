@@ -23,6 +23,5 @@ export class BullMQMailQueueProvider implements IMailQueueProvider {
         delay: 5000,
       },
     });
-    console.log(`📦 [Queue] E-mail to ${data.to} has been added to the queue!`);
   }
 }

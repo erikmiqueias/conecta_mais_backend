@@ -1,3 +1,4 @@
+import { SendMailError } from "@shared/errors/errors.js";
 import {
   IMailProvider,
   SendMailDTO,
@@ -17,10 +18,6 @@ export class ResendMailProvider implements IMailProvider {
     to,
     attachments,
   }: SendMailDTO): Promise<void> {
-    console.log(
-      "Anexos chegaram do redis:",
-      attachments ? attachments.length : "Nenhum anexo chegou",
-    );
     const { data: _data, error } = await this.resend.emails.send({
       from: "Conecta + <onboardin@resend.dev>",
       to: [to],
@@ -30,8 +27,7 @@ export class ResendMailProvider implements IMailProvider {
     });
 
     if (error) {
-      console.error("Error on send email", error);
-      throw new Error(`Error on send email: ${error}`);
+      throw new SendMailError(error.message);
     }
   }
 }
