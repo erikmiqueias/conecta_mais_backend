@@ -5,6 +5,8 @@ import {
   GetUserByIdRepository,
   UpdateUserRepository,
 } from "@infra/database/prisma/repositories/user/index.js";
+import { UpdateUserAvatarRepository } from "@infra/database/prisma/repositories/user/update-user-avatar.repo.js";
+import { CloudinaryProvider } from "@infra/providers/image-upload/cloudinary.provider.js";
 import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
 
 import {
@@ -13,6 +15,7 @@ import {
   GetUserByIdUseCase,
   UpdateUserUseCase,
 } from "../use-cases/index.js";
+import { UpdateUserAvatarUseCase } from "../use-cases/upload-avatar.use-case.js";
 
 export const makeDeleteUserUseCase = () => {
   const deleteUserRepository = new DeleteUserRepository();
@@ -52,4 +55,17 @@ export const makeUpdateUserUseCase = () => {
     getUserByEmailRepository,
   );
   return updateUserUseCase;
+};
+
+export const makeUpdateUserAvatarUseCase = () => {
+  const updateUserAvatarRepository = new UpdateUserAvatarRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
+  const uploadImageProvider = new CloudinaryProvider();
+  const updateUserAvatarUseCase = new UpdateUserAvatarUseCase(
+    updateUserAvatarRepository,
+    getUserByIdRepository,
+    uploadImageProvider,
+  );
+
+  return updateUserAvatarUseCase;
 };

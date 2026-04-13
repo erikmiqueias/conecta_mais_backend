@@ -165,3 +165,17 @@ export class SendMailError extends Error {
     this.name = "SendMailError";
   }
 }
+
+export class UploadImageError extends Error {
+  constructor() {
+    super("Error uploading image");
+    this.name = "UploadImageError";
+  }
+}
+
+export class FileIsRequiredError extends Error {
+  constructor() {
+    super("File is required");
+    this.name = "FileIsRequiredError";
+  }
+}

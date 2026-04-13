@@ -143,6 +143,13 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
 
   // --- 400 BAD REQUEST (Regras de negócio violadas ou requisições ilógicas) ---
 
+  if (error.name === "FileIsRequiredError") {
+    return reply.status(400).send({
+      message: error.message,
+      code: "FILE_IS_REQUIRED",
+    });
+  }
+
   if (error.name === "UserNotSubscribedError") {
     return reply.status(400).send({
       message: error.message,
@@ -205,6 +212,13 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
     return reply.status(502).send({
       message: error.message,
       code: "SEND_MAIL_ERROR",
+    });
+  }
+
+  if (error.name === "UploadImageError") {
+    return reply.status(502).send({
+      message: error.message,
+      code: "UPLOAD_IMAGE_ERROR",
     });
   }
 

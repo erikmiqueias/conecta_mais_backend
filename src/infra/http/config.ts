@@ -1,5 +1,6 @@
 import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
+import fastifyMultipart from "@fastify/multipart";
 import fastifySwagger from "@fastify/swagger";
 import fastifyApiReference from "@scalar/fastify-api-reference";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
@@ -110,4 +111,10 @@ export const fastifySetupConfig = async (app: FastifyInstance) => {
       },
     });
   }
+  app.register(fastifyMultipart, {
+    limits: {
+      fileSize: 8 * 1024 * 1024,
+      files: 1,
+    },
+  });
 };

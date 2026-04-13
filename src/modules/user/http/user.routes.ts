@@ -1,6 +1,10 @@
 import { Role } from "@generated/prisma/enums.js";
 import { GetUserByEmailRepository } from "@infra/database/prisma/repositories/user/get-user-by-email.repo.js";
-import { LoginError, RefreshTokenError } from "@shared/errors/errors.js";
+import {
+  FileIsRequiredError,
+  LoginError,
+  RefreshTokenError,
+} from "@shared/errors/errors.js";
 import { ErrorSchema } from "@shared/schemas/error.schema.js";
 import bcrypt from "bcryptjs";
 import { FastifyInstance } from "fastify";
@@ -11,6 +15,7 @@ import {
   makeCreateUserUseCase,
   makeDeleteUserUseCase,
   makeGetUserByIdUseCase,
+  makeUpdateUserAvatarUseCase,
   makeUpdateUserUseCase,
 } from "../factories/user.factory.js";
 import {
@@ -246,6 +251,40 @@ export const userRoutes = (app: FastifyInstance) => {
           refreshToken: newRefreshToken,
         },
       });
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/avatar",
+    onRequest: app.authenticate,
+    schema: {
+      tags: ["User"],
+      security: [{ bearerAuth: [] }],
+      consumes: ["multipart/form-data"],
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user.sub;
+
+      const data = await request.file();
+
+      if (!data) {
+        throw new FileIsRequiredError();
+      }
+
+      const fileBuffer = await data?.toBuffer();
+
+      const updateUserAvatarUseCase = makeUpdateUserAvatarUseCase();
+
+      await updateUserAvatarUseCase.execute(userId, fileBuffer);
+
+      return reply.status(204).send(null);
     },
   });
 };
