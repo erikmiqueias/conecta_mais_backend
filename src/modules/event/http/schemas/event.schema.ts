@@ -50,6 +50,19 @@ export const CreateEventInputSchema = z.object({
       error: "Access code is required for private events",
     })
     .optional(),
+  ticketBatches: z.array(
+    z.object({
+      batchName: z.string().trim().min(1, {
+        error: "Batch name is required",
+      }),
+      price: z.number().min(1, {
+        error: "Price must be a number greater than 0",
+      }),
+      totalCapacity: z.number().min(1, {
+        error: "Total capacity must be a number greater than 0",
+      }),
+    }),
+  ),
 });
 
 export const CreateEventOutputSchema = z.object({
@@ -62,6 +75,15 @@ export const CreateEventOutputSchema = z.object({
   updatedAt: z.date(),
   deletedAt: z.date().nullable(),
   organizerId: z.string(),
+  ticketBatches: z.array(
+    z.object({
+      id: z.string(),
+      batchName: z.string(),
+      price: z.number(),
+      totalCapacity: z.number(),
+      eventId: z.string(),
+    }),
+  ),
 });
 
 export const GetOrganizerEventsOutputSchema = z.array(

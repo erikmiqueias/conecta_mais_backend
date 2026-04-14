@@ -112,7 +112,6 @@ model Ticket {
   userId        String
   ticketBatchId String
   status        TicketStatus @default(PENDING)
-
   ticketBatch TicketBatch @relation(fields: [ticketBatchId], references: [id])
   user        User        @relation(fields: [userId], references: [id])
 }

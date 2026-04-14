@@ -22,13 +22,31 @@ export class CreateEventRepository implements ICreateEventRepository {
         endDateTime: data.endDateTime,
         organizerId: organizerId,
         accessCode: data.accessCode,
+        ticketBatches: {
+          create: data.ticketBatches.map((batch) => {
+            return {
+              batchName: batch.batchName,
+              price: batch.price,
+              totalCapacity: batch.totalCapacity,
+              soldCount: 0,
+            };
+          }),
+        },
+      },
+      include: {
+        ticketBatches: true,
       },
     });
-    return {
+
+    const formattedEvent = {
       ...event,
       latitude: event.latitude.toNumber(),
       longitude: event.longitude.toNumber(),
-      accessCode: event.accessCode ?? null,
+      ticketBatches: event.ticketBatches.map((batch) => ({
+        ...batch,
+        price: batch.price.toNumber(),
+      })),
     };
+    return formattedEvent;
   }
 }
