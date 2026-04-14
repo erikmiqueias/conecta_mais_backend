@@ -19,6 +19,9 @@ model User {
   password           String
   avatarUrl          String?
   role               Role                @default(USER)
+  emailVerified      Boolean             @default(false)
+  verificationToken  String?             @unique
+  verificationTokenExpiry DateTime?
   createdAt          DateTime            @default(now()) @db.Timestamptz()
   updatedAt          DateTime            @updatedAt @db.Timestamptz()
   deletedAt          DateTime?           @db.Timestamptz()
@@ -27,6 +30,8 @@ model User {
   eventReviews       EventReview[]
 
   tokens Token[]
+
+  tickets Ticket[]
 }
 
 model Event {
@@ -51,6 +56,8 @@ model Event {
 
   eventSubscriptions EventSubscription[]
   eventReviews       EventReview[]
+
+  ticketBatches TicketBatch[]
 }
 
 model EventSubscription {
@@ -86,6 +93,34 @@ model Token {
 
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model TicketBatch {
+  id            String  @id @default(uuid())
+  eventId       String
+  batchName     String
+  price         Decimal
+  totalCapacity Int
+  soldCount     Int     @default(0)
+
+  event   Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+}
+
+model Ticket {
+  id            String       @id @default(uuid())
+  userId        String
+  ticketBatchId String
+  status        TicketStatus @default(PENDING)
+
+  ticketBatch TicketBatch @relation(fields: [ticketBatchId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+}
+
+enum TicketStatus {
+  PENDING
+  SOLD
+  CHECKED_IN
 }
 
 enum Role {

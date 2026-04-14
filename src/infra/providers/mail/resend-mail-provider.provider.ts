@@ -19,7 +19,7 @@ export class ResendMailProvider implements IMailProvider {
     attachments,
   }: SendMailDTO): Promise<void> {
     const { data: _data, error } = await this.resend.emails.send({
-      from: "Conecta + <onboardin@resend.dev>",
+      from: "Conecta + <no-reply@conectamais.app>",
       to: [to],
       subject,
       html: body,
