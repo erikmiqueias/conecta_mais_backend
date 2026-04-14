@@ -1,5 +1,8 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/index.js";
-import { UserNotFoundError } from "@shared/errors/errors.js";
+import {
+  EmailIsNotVerifiedError,
+  UserNotFoundError,
+} from "@shared/errors/errors.js";
 
 import {
   InputGetOrganizerEventsDTO,
@@ -20,6 +23,10 @@ export class GetOrganizerEventsUseCase {
 
     if (!organizer) {
       throw new UserNotFoundError();
+    }
+
+    if (!organizer.emailVerified) {
+      throw new EmailIsNotVerifiedError();
     }
 
     return await this.getOrganizerEventsRepository.execute(organizerId);

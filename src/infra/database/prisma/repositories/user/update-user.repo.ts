@@ -11,14 +11,11 @@ export class UpdateUserRepository implements IUpdateUserRepository {
     data: InputUpdateUserDTO,
   ): Promise<OutputUpdateUserDTO | null> {
     const user = await prisma.user.update({
-      data: {
-        email: data.email,
-        username: data.username,
-      },
       where: {
         id: userId,
         deletedAt: null,
       },
+      data,
     });
     return user;
   }

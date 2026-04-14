@@ -1,4 +1,7 @@
-import { UserNotFoundError } from "@shared/errors/errors.js";
+import {
+  EmailIsNotVerifiedError,
+  UserNotFoundError,
+} from "@shared/errors/errors.js";
 
 import {
   IDeleteUserRepository,
@@ -15,6 +18,9 @@ export class DeleteUserUseCase {
 
     if (!userExists) {
       throw new UserNotFoundError();
+    }
+    if (!userExists.emailVerified) {
+      throw new EmailIsNotVerifiedError();
     }
 
     return await this.deleteUserRepository.execute(userId);

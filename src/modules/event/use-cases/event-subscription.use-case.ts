@@ -1,6 +1,7 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/get-user-by-id.interface.js";
 import {
   AccessCodeIsRequiredError,
+  EmailIsNotVerifiedError,
   EventNotFoundError,
   UserAlreadySubscribedError,
   UserNotFoundError,
@@ -39,6 +40,8 @@ export class EventSubscriptionUseCase {
     if (eventExists.organizerId === userId)
       throw new UserAlreadySubscribedError();
     if (isSubscribe) throw new UserAlreadySubscribedError();
+
+    if (!userExists.emailVerified) throw new EmailIsNotVerifiedError();
 
     if (
       eventExists.eventType === "PRIVATE" &&

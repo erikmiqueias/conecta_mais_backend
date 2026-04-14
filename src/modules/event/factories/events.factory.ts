@@ -53,9 +53,11 @@ export const makeCreateEventUseCase = () => {
 export const makeDeleteEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const deleteEventRepository = new DeleteEventRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const deleteEventUseCase = new DeleteEventUseCase(
     getEventByIdRepository,
     deleteEventRepository,
+    getUserByIdRepository,
   );
   return deleteEventUseCase;
 };
@@ -84,9 +86,11 @@ export const makeUpdateEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const updateEventRepository = new UpdateEventRepository();
   const geoCoderProvider = new OpenStreetMapProvider();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const updateEventUseCase = new UpdateEventUseCase(
     updateEventRepository,
     getEventByIdRepository,
+    getUserByIdRepository,
     geoCoderProvider,
   );
   return updateEventUseCase;
@@ -111,15 +115,18 @@ export const makeEventSubscriptionUseCase = () => {
 export const makeGetEventParticipantsUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const getEventParticipantsRepository = new GetEventParticipantsRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const getEventParticipantsUseCase = new GetEventParticipantsUseCase(
     getEventParticipantsRepository,
     getEventByIdRepository,
+    getUserByIdRepository,
   );
   return getEventParticipantsUseCase;
 };
 
 export const makeRemoveParticipantFromEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const removeParticipantFromEventRepository =
     new RemoveParticipantFromEventRepository();
   const getUserSubscribeRepository = new GetUserSubscribeRepository();
@@ -128,14 +135,17 @@ export const makeRemoveParticipantFromEventUseCase = () => {
       removeParticipantFromEventRepository,
       getEventByIdRepository,
       getUserSubscribeRepository,
+      getUserByIdRepository,
     );
   return removeParticipantFromEventUseCase;
 };
 
 export const makeGetUserSubscriptionsUseCase = () => {
   const getUserSubscriptionsRepository = new GetUserSubscriptionsRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const getUserSubscriptionsUseCase = new GetUserSubscriptionsUseCase(
     getUserSubscriptionsRepository,
+    getUserByIdRepository,
   );
   return getUserSubscriptionsUseCase;
 };
@@ -143,10 +153,12 @@ export const makeGetUserSubscriptionsUseCase = () => {
 export const makeCancelEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const updateEventStatusRepository = new UpdateEventStatusRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const mailProvider = new BullMQMailQueueProvider();
   const cancelEventUseCase = new CancelEventUseCase(
     getEventByIdRepository,
     updateEventStatusRepository,
+    getUserByIdRepository,
     mailProvider,
   );
   return cancelEventUseCase;
@@ -155,10 +167,12 @@ export const makeCancelEventUseCase = () => {
 export const makeReopenEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const updateEventStatusRepository = new UpdateEventStatusRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const mailProvider = new BullMQMailQueueProvider();
   const reopenEventUseCase = new ReopenEventUseCase(
     getEventByIdRepository,
     updateEventStatusRepository,
+    getUserByIdRepository,
     mailProvider,
   );
   return reopenEventUseCase;
@@ -166,7 +180,11 @@ export const makeReopenEventUseCase = () => {
 
 export const makeShareEventUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
-  const shareEventUseCase = new ShareEventUseCase(getEventByIdRepository);
+  const getUserByIdRepository = new GetUserByIdRepository();
+  const shareEventUseCase = new ShareEventUseCase(
+    getEventByIdRepository,
+    getUserByIdRepository,
+  );
   return shareEventUseCase;
 };
 
@@ -174,9 +192,11 @@ export const makeUpdateEventBannerUseCase = () => {
   const getEventByIdRepository = new GetEventByIdRepository();
   const uploadImageProvider = new CloudinaryProvider();
   const updateEventBannerRepository = new UpdateEventBannerRepository();
+  const getUserByIdRepository = new GetUserByIdRepository();
   const updateEventBannerUseCase = new UpdateEventBannerUseCase(
     updateEventBannerRepository,
     getEventByIdRepository,
+    getUserByIdRepository,
     uploadImageProvider,
   );
   return updateEventBannerUseCase;

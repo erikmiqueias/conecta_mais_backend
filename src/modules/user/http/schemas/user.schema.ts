@@ -24,6 +24,8 @@ export const UserSchema = z.object({
 export const CreateUserInputSchema = z.object({
   ...UserCoreSchema,
   password: z.string().min(8),
+  verificationToken: z.string().optional(),
+  verificationTokenExpiry: z.date().optional(),
 });
 
 export const UserOutputSchema = z.object({
@@ -34,6 +36,7 @@ export const UserOutputSchema = z.object({
   username: z.string().trim().min(1, {
     error: "Username is required",
   }),
+  emailVerified: z.boolean(),
 });
 
 export const GetUserByEmailOutputSchema = z.object({
@@ -64,6 +67,7 @@ export const UpdateUserOutputSchema = z.object({
   id: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  emailVerified: z.boolean(),
 });
 
 export const AuthCoreSchema = {

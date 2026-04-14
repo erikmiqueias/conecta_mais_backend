@@ -1,5 +1,8 @@
 import { IGetUserByIdRepository } from "@modules/user/repositories/index.js";
-import { UserNotFoundError } from "@shared/errors/errors.js";
+import {
+  EmailIsNotVerifiedError,
+  UserNotFoundError,
+} from "@shared/errors/errors.js";
 import { IGeocoderProvider } from "@shared/providers/geocoder/osm.interface.js";
 import { IMailQueueProvider } from "@shared/providers/queue/mail-queue-provider.interface.js";
 
@@ -26,6 +29,10 @@ export class CreateEventUseCase {
 
     if (!user) {
       throw new UserNotFoundError();
+    }
+
+    if (!user.emailVerified) {
+      throw new EmailIsNotVerifiedError();
     }
 
     if (data.eventAddress && (!data.latitude || !data.longitude)) {

@@ -13,6 +13,8 @@ export class CreateUserRepository implements ICreateUserRepository {
         email: data.email,
         password: data.password,
         role: data.role,
+        emailVerified: false,
+        verificationToken: data.verificationToken,
       },
     });
 

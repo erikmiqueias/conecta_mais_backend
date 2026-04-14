@@ -1,3 +1,4 @@
+import { GetUserByVerificationTokenRepository } from "@infra/database/prisma/repositories/user/get-user-by-verification-token.repo.js";
 import {
   CreateUserRepository,
   DeleteUserRepository,
@@ -16,6 +17,7 @@ import {
   UpdateUserUseCase,
 } from "../use-cases/index.js";
 import { UpdateUserAvatarUseCase } from "../use-cases/update-user-avatar.use-case.js";
+import { VerifyEmailUseCase } from "../use-cases/verify-email.use-case.js";
 
 export const makeDeleteUserUseCase = () => {
   const deleteUserRepository = new DeleteUserRepository();
@@ -49,10 +51,12 @@ export const makeUpdateUserUseCase = () => {
   const getUserByEmailRepository = new GetUserByEmailRepository();
   const getUserByIdRepository = new GetUserByIdRepository();
   const updateUserRepository = new UpdateUserRepository();
+  const mailProvider = new BullMQMailQueueProvider();
   const updateUserUseCase = new UpdateUserUseCase(
     updateUserRepository,
     getUserByIdRepository,
     getUserByEmailRepository,
+    mailProvider,
   );
   return updateUserUseCase;
 };
@@ -68,4 +72,15 @@ export const makeUpdateUserAvatarUseCase = () => {
   );
 
   return updateUserAvatarUseCase;
+};
+
+export const makeVerifyEmailUseCase = () => {
+  const getUserByVerificationTokenRepository =
+    new GetUserByVerificationTokenRepository();
+  const updateUserRepository = new UpdateUserRepository();
+  const verifyEmailUseCase = new VerifyEmailUseCase(
+    getUserByVerificationTokenRepository,
+    updateUserRepository,
+  );
+  return verifyEmailUseCase;
 };

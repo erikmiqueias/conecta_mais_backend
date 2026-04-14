@@ -1,6 +1,9 @@
+import { IGetUserByIdRepository } from "@modules/user/repositories/get-user-by-id.interface.js";
 import {
+  EmailIsNotVerifiedError,
   EventNotAuthorizedError,
   EventNotFoundError,
+  UserNotFoundError,
 } from "@shared/errors/errors.js";
 import { IGeocoderProvider } from "@shared/providers/geocoder/osm.interface.js";
 
@@ -18,6 +21,7 @@ export class UpdateEventUseCase {
   constructor(
     private updateEventRepository: IUpdateEventRepository,
     private readonly getEventByIdRepository: IGetEventByIdRepository,
+    private readonly getUserByIdRepository: IGetUserByIdRepository,
     private readonly geoCoderProvider: IGeocoderProvider,
   ) {}
   async execute(
@@ -25,7 +29,18 @@ export class UpdateEventUseCase {
     userId: string,
     data: InputUpdateEventDTO,
   ): Promise<OutputUpdateEventDTO> {
-    const eventExists = await this.getEventByIdRepository.execute(eventId);
+    const [userExists, eventExists] = await Promise.all([
+      this.getUserByIdRepository.execute(userId),
+      this.getEventByIdRepository.execute(eventId),
+    ]);
+
+    if (!userExists) {
+      throw new UserNotFoundError();
+    }
+
+    if (!userExists.emailVerified) {
+      throw new EmailIsNotVerifiedError();
+    }
 
     if (!eventExists) {
       throw new EventNotFoundError();

@@ -17,6 +17,7 @@ import {
   makeGetUserByIdUseCase,
   makeUpdateUserAvatarUseCase,
   makeUpdateUserUseCase,
+  makeVerifyEmailUseCase,
 } from "../factories/user.factory.js";
 import {
   AuthOutputSchema,
@@ -280,6 +281,34 @@ export const userRoutes = (app: FastifyInstance) => {
       const updateUserAvatarUseCase = makeUpdateUserAvatarUseCase();
 
       await updateUserAvatarUseCase.execute(userId, fileBuffer);
+
+      return reply.status(204).send(null);
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/verify-email",
+    schema: {
+      tags: ["User"],
+      querystring: z.object({
+        token: z.uuid({
+          error: "Token is required",
+        }),
+      }),
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        401: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { token } = request.query;
+
+      const verifyUserEmailUseCase = makeVerifyEmailUseCase();
+
+      await verifyUserEmailUseCase.execute(token);
 
       return reply.status(204).send(null);
     },

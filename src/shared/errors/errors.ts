@@ -179,3 +179,17 @@ export class FileIsRequiredError extends Error {
     this.name = "FileIsRequiredError";
   }
 }
+
+export class EmailIsNotVerifiedError extends Error {
+  constructor() {
+    super("Email is not verified");
+    this.name = "EmailIsNotVerifiedError";
+  }
+}
+
+export class DomainEmailError extends Error {
+  constructor() {
+    super("Domain email is not allowed");
+    this.name = "DomainEmailError";
+  }
+}

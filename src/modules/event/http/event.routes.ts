@@ -85,8 +85,9 @@ export const eventRoutes = (app: FastifyInstance) => {
     },
     handler: async (request, reply) => {
       const { eventId } = request.params;
+      const userId = request.user.sub;
       const deleteEventUseCase = makeDeleteEventUseCase();
-      await deleteEventUseCase.execute(eventId);
+      await deleteEventUseCase.execute(userId, eventId);
 
       return reply.status(204).send(null);
     },
@@ -117,7 +118,7 @@ export const eventRoutes = (app: FastifyInstance) => {
   });
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
-    url: "/events",
+    url: "",
     preHandler: verifyOptionalJwt,
     schema: {
       security: [{ bearerAuth: [] }],

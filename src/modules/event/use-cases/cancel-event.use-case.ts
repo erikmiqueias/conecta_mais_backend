@@ -1,5 +1,7 @@
+import { IGetUserByIdRepository } from "@modules/user/repositories/get-user-by-id.interface.js";
 import {
   CannotCancelPastEventError,
+  EmailIsNotVerifiedError,
   EventAlreadyCanceledError,
   EventNotAuthorizedError,
   EventNotFoundError,
@@ -13,14 +15,22 @@ export class CancelEventUseCase {
   constructor(
     private readonly getEventByIdRepository: IGetEventByIdRepository,
     private readonly updateEventStatusRepository: IUpdateEventStatusRepository,
+    private readonly getUserByIdRepository: IGetUserByIdRepository,
     private readonly mailProvider: IMailQueueProvider,
   ) {}
 
   async execute(organizerId: string, eventId: string): Promise<boolean> {
-    const eventExists = await this.getEventByIdRepository.execute(eventId);
+    const [emailIsVerified, eventExists] = await Promise.all([
+      this.getUserByIdRepository.execute(organizerId),
+      this.getEventByIdRepository.execute(eventId),
+    ]);
 
     if (!eventExists) {
       throw new EventNotFoundError();
+    }
+
+    if (!emailIsVerified?.emailVerified) {
+      throw new EmailIsNotVerifiedError();
     }
 
     if (eventExists.organizerId !== organizerId) {
