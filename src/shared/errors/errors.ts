@@ -200,3 +200,10 @@ export class CapacityExceededError extends Error {
     this.name = "CapacityExceededError";
   }
 }
+
+export class TicketBatchNotFoundError extends Error {
+  constructor() {
+    super("Ticket batch not found");
+    this.name = "TicketBatchNotFoundError";
+  }
+}

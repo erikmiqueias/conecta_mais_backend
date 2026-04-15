@@ -1,3 +1,4 @@
+import { TicketStatus } from "@generated/prisma/enums.js";
 import z from "zod";
 
 const TicketBatchCoreSchema = {
@@ -28,4 +29,12 @@ export const GetTicketBatchByIdOutputSchema = z.object({
   soldCount: z.number().int().nonnegative(),
   id: z.uuid(),
   eventId: z.uuid(),
+  price: z.number().positive(),
+});
+
+export const ProcessCheckoutOutputSchema = z.object({
+  id: z.uuid(),
+  status: z.enum(TicketStatus),
+  userId: z.uuid(),
+  ticketBatchId: z.uuid(),
 });

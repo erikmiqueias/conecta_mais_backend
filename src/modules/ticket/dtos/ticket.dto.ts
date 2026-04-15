@@ -2,6 +2,7 @@ import z from "zod";
 
 import {
   GetTicketBatchByIdOutputSchema,
+  ProcessCheckoutOutputSchema,
   UpdateTicketBatchInputSchema,
   UpdateTicketBatchOutputSchema,
 } from "../http/schemas/ticket.schemas.js";
@@ -12,4 +13,8 @@ export type OutputTicketBatchDTO = z.infer<
 >;
 export type OutputGetTicketBatchByIdDTO = z.infer<
   typeof GetTicketBatchByIdOutputSchema
+>;
+
+export type OutputProcessCheckoutDTO = z.infer<
+  typeof ProcessCheckoutOutputSchema
 >;

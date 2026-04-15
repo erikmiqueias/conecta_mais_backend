@@ -4,8 +4,15 @@ import { IGetTicketBatchByIdRepository } from "@modules/ticket/repositories/get-
 
 export class GetTicketBatchByIdRepository implements IGetTicketBatchByIdRepository {
   async execute(batchId: string): Promise<OutputGetTicketBatchByIdDTO | null> {
-    return await prisma.ticketBatch.findUnique({
+    const result = await prisma.ticketBatch.findUnique({
       where: { id: batchId },
     });
+
+    if (!result) return null;
+
+    return {
+      ...result,
+      price: Number(result.price),
+    };
   }
 }

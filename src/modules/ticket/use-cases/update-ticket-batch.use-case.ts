@@ -2,6 +2,7 @@ import { IGetEventByIdRepository } from "@modules/event/repositories/get-event-b
 import { IGetUserByIdRepository } from "@modules/user/repositories/get-user-by-id.interface.js";
 import {
   CapacityExceededError,
+  EmailIsNotVerifiedError,
   EventNotAuthorizedError,
   EventNotFoundError,
   UserNotFoundError,
@@ -34,6 +35,7 @@ export class UpdateTicketBatchUseCase {
     ]);
 
     if (!organizer) throw new UserNotFoundError();
+    if (organizer.emailVerified === false) throw new EmailIsNotVerifiedError();
     if (!event) throw new EventNotFoundError();
     if (!ticketBatch) throw new Error("Ticket batch not found");
     if (event.organizerId !== organizerId) throw new EventNotAuthorizedError();
