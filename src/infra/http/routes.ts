@@ -1,6 +1,7 @@
 import { authRoutes } from "@modules/auth/http/auth.routes.js";
 import { evaluationsRoutes } from "@modules/evaluations/http/evaluations.routes.js";
 import { eventRoutes } from "@modules/event/http/event.routes.js";
+import { ticketRoutes } from "@modules/ticket/http/ticket.routes.js";
 import { userRoutes } from "@modules/user/http/user.routes.js";
 import { FastifyInstance } from "fastify";
 export const registerRoutes = (app: FastifyInstance) => {
@@ -8,4 +9,5 @@ export const registerRoutes = (app: FastifyInstance) => {
   app.register(eventRoutes, { prefix: "/events" });
   app.register(evaluationsRoutes, { prefix: "/evaluations" });
   app.register(authRoutes, { prefix: "/auth" });
+  app.register(ticketRoutes, { prefix: "/tickets" });
 };

@@ -193,3 +193,10 @@ export class DomainEmailError extends Error {
     this.name = "DomainEmailError";
   }
 }
+
+export class CapacityExceededError extends Error {
+  constructor() {
+    super("Capacity exceeds sold tickets");
+    this.name = "CapacityExceededError";
+  }
+}

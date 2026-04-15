@@ -143,6 +143,13 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
 
   // --- 400 BAD REQUEST (Regras de negócio violadas ou requisições ilógicas) ---
 
+  if (error.name === "CapacityExceededError") {
+    return reply.status(400).send({
+      message: error.message,
+      code: "CAPACITY_EXCEEDED",
+    });
+  }
+
   if (error.name === "EmailIsNotVerifiedError") {
     return reply.status(400).send({
       message: error.message,
