@@ -207,3 +207,10 @@ export class TicketBatchNotFoundError extends Error {
     this.name = "TicketBatchNotFoundError";
   }
 }
+
+export class UserAlreadyHasTicketError extends Error {
+  constructor() {
+    super("User already has a ticket");
+    this.name = "UserAlreadyHasTicketError";
+  }
+}

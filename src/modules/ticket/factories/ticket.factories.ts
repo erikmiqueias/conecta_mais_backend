@@ -1,5 +1,6 @@
 import { GetEventByIdRepository } from "@infra/database/prisma/repositories/event/get-event-by-id.repo.js";
 import { GetTicketBatchByIdRepository } from "@infra/database/prisma/repositories/ticket/get-ticket-batch-by-id.repo.js";
+import { GetTicketByUserIdRepository } from "@infra/database/prisma/repositories/ticket/get-ticket-by-user-id.repo.js";
 import { GetUserTicketsRepository } from "@infra/database/prisma/repositories/ticket/get-user-tickets.repo.js";
 import { ProcessCheckoutRepository } from "@infra/database/prisma/repositories/ticket/process-checkout.repo.js";
 import { UpdateTicketBatchRepository } from "@infra/database/prisma/repositories/ticket/update-ticket-batch.repo.js";
@@ -27,10 +28,12 @@ export const makeCheckoutTicketUseCase = () => {
   const processChekoutRepository = new ProcessCheckoutRepository();
   const getUserByIdRepository = new GetUserByIdRepository();
   const getTicketBatchByIdRepository = new GetTicketBatchByIdRepository();
+  const getTicketByUserIdRepository = new GetTicketByUserIdRepository();
   const checkoutTicketUseCase = new CheckoutTicketUseCase(
     getUserByIdRepository,
     getTicketBatchByIdRepository,
     processChekoutRepository,
+    getTicketByUserIdRepository,
   );
   return checkoutTicketUseCase;
 };
