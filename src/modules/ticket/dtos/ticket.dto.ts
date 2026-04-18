@@ -2,6 +2,7 @@ import z from "zod";
 
 import {
   GetTicketBatchByIdOutputSchema,
+  GetTicketByIdOutputSchema,
   GetUserTicketsOutputSchema,
   ProcessCheckoutOutputSchema,
   UpdateTicketBatchInputSchema,
@@ -23,3 +24,5 @@ export type OutputProcessCheckoutDTO = z.infer<
 export type OutputGetUserTicketsDTO = z.infer<
   typeof GetUserTicketsOutputSchema
 >;
+
+export type OutputGetTicketByIdDTO = z.infer<typeof GetTicketByIdOutputSchema>;

@@ -214,3 +214,24 @@ export class UserAlreadyHasTicketError extends Error {
     this.name = "UserAlreadyHasTicketError";
   }
 }
+
+export class TicketQRCodeError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TicketQRCodeError";
+  }
+}
+
+export class TicketNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TicketNotFoundError";
+  }
+}
+
+export class TicketNotAuthorizedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TicketNotAuthorizedError";
+  }
+}

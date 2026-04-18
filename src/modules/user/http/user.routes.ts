@@ -32,7 +32,10 @@ export const userRoutes = (app: FastifyInstance) => {
     url: "",
     schema: {
       tags: ["User"],
-      body: CreateUserInputSchema,
+      body: CreateUserInputSchema.omit({
+        verificationToken: true,
+        verificationTokenExpiry: true,
+      }),
       response: {
         201: UserOutputSchema,
         400: ErrorSchema,

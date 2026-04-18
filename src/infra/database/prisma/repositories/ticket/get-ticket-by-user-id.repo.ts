@@ -1,7 +1,7 @@
 import { prisma } from "@infra/database/lib/db.js";
-import { IGetTicketByBatchIdAndUserIdRepository } from "@modules/ticket/repositories/get-ticket-by-batch-id-and-user-id.interface.js";
+import { UserHasTicketRepository } from "@modules/ticket/repositories/user-has-ticket.interface.js";
 
-export class GetTicketByBatchIdAndUserIdRepository implements IGetTicketByBatchIdAndUserIdRepository {
+export class GetTicketByBatchIdAndUserIdRepository implements UserHasTicketRepository {
   async execute(batchId: string, userId: string): Promise<boolean> {
     const ticket = await prisma.ticket.count({
       where: {

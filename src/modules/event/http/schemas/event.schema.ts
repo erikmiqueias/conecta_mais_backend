@@ -55,8 +55,8 @@ export const CreateEventInputSchema = z.object({
       batchName: z.string().trim().min(1, {
         error: "Batch name is required",
       }),
-      price: z.number().min(1, {
-        error: "Price must be a number greater than 0",
+      price: z.number().nonnegative({
+        error: "Price must be a non-negative number",
       }),
       totalCapacity: z.number().min(1, {
         error: "Total capacity must be a number greater than 0",

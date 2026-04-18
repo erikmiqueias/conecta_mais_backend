@@ -5,6 +5,7 @@ import z from "zod";
 
 import {
   makeCheckoutTicketUseCase,
+  makeGenerateTicketQRCodeUseCase,
   makeGetUserTicketsUseCase,
   makeUpdateTicketBatchUseCase,
 } from "../factories/ticket.factories.js";
@@ -89,6 +90,39 @@ export const ticketRoutes = (app: FastifyInstance) => {
       const getUserTicketsUseCase = makeGetUserTicketsUseCase();
       const tickets = await getUserTicketsUseCase.execute(userId);
       return reply.status(200).send(tickets);
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/:ticketId/qrcode",
+    onRequest: [app.authenticate],
+    schema: {
+      tags: ["Ticket"],
+      security: [{ bearerAuth: [] }],
+      params: z.object({
+        ticketId: z.uuid({ error: "Invalid UUId format for ticket ID" }),
+      }),
+      response: {
+        200: z.object({
+          ticketId: z.uuid(),
+          qrCode: z.string(),
+          ticketCode: z.string(),
+        }),
+        400: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user.sub;
+      const { ticketId } = request.params;
+
+      const generateTicketQRCodeUseCase = makeGenerateTicketQRCodeUseCase();
+      const qrCodeData = await generateTicketQRCodeUseCase.execute(
+        userId,
+        ticketId,
+      );
+      return reply.status(200).send(qrCodeData);
     },
   });
 };

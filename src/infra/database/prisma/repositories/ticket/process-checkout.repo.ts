@@ -2,6 +2,7 @@ import { TicketStatus } from "@generated/prisma/enums.js";
 import { prisma } from "@infra/database/lib/db.js";
 import { OutputProcessCheckoutDTO } from "@modules/ticket/dtos/ticket.dto.js";
 import { IProcessCheckoutRepository } from "@modules/ticket/repositories/process-checkout.interface.js";
+import { CapacityExceededError } from "@shared/errors/errors.js";
 
 export class ProcessCheckoutRepository implements IProcessCheckoutRepository {
   async execute(
@@ -15,10 +16,13 @@ export class ProcessCheckoutRepository implements IProcessCheckoutRepository {
         data: {
           soldCount: { increment: 1 },
         },
+        include: {
+          event: true,
+        },
       });
 
       if (updatedBatch.soldCount > updatedBatch.totalCapacity) {
-        throw new Error("OVERBOOKING");
+        throw new CapacityExceededError();
       }
 
       const newTicket = await tx.ticket.create({
@@ -26,6 +30,13 @@ export class ProcessCheckoutRepository implements IProcessCheckoutRepository {
           userId,
           ticketBatchId: batchId,
           status: ticketStatus,
+        },
+        include: {
+          ticketBatch: {
+            include: {
+              event: true,
+            },
+          },
         },
       });
 

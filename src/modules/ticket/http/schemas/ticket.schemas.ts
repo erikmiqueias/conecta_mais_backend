@@ -43,6 +43,16 @@ export const ProcessCheckoutOutputSchema = z.object({
   status: z.enum(TicketStatus),
   userId: z.uuid(),
   ticketBatchId: z.uuid(),
+  ticketCode: z.uuid(),
+  ticketBatch: z.object({
+    id: z.uuid(),
+    batchName: z.string(),
+    eventId: z.uuid(),
+    event: z.object({
+      id: z.uuid(),
+      name: z.string(),
+    }),
+  }),
 });
 
 export const GetUserTicketsOutputSchema = z.array(
@@ -61,3 +71,20 @@ export const GetUserTicketsOutputSchema = z.array(
     }),
   }),
 );
+
+export const GetTicketByIdOutputSchema = z.object({
+  ...TicketCoreSchema,
+  id: z.uuid(),
+  ticketBatchId: z.uuid(),
+  userId: z.uuid(),
+  ticketCode: z.string(),
+  ticketBatch: z.object({
+    id: z.uuid(),
+    batchName: z.string(),
+    eventId: z.uuid(),
+    event: z.object({
+      id: z.uuid(),
+      name: z.string(),
+    }),
+  }),
+});
