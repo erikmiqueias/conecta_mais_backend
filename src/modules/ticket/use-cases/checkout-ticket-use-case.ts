@@ -9,7 +9,7 @@ import {
 
 import { OutputProcessCheckoutDTO } from "../dtos/ticket.dto.js";
 import { IGetTicketBatchByIdRepository } from "../repositories/get-ticket-batch-by-id.interface.js";
-import { IGetTicketByUserIdRepository } from "../repositories/get-ticket-by-user-id.interface.js";
+import { IGetTicketByBatchIdAndUserIdRepository } from "../repositories/get-ticket-by-batch-id-and-user-id.interface.js";
 import { IProcessCheckoutRepository } from "../repositories/process-checkout.interface.js";
 
 export class CheckoutTicketUseCase {
@@ -17,7 +17,7 @@ export class CheckoutTicketUseCase {
     private readonly getUserByIdRepository: IGetUserByIdRepository,
     private readonly getTicketBatchByIdRepository: IGetTicketBatchByIdRepository,
     private readonly processCheckoutRepository: IProcessCheckoutRepository,
-    private readonly getTicketByUserIdRepository: IGetTicketByUserIdRepository,
+    private readonly getTicketByBatchIdAndUserIdRepository: IGetTicketByBatchIdAndUserIdRepository,
   ) {}
 
   async execute(
@@ -27,7 +27,7 @@ export class CheckoutTicketUseCase {
     const [user, ticketBatch, hasTicket] = await Promise.all([
       this.getUserByIdRepository.execute(userId),
       this.getTicketBatchByIdRepository.execute(batchId),
-      this.getTicketByUserIdRepository.execute(userId),
+      this.getTicketByBatchIdAndUserIdRepository.execute(batchId, userId),
     ]);
 
     if (!user) throw new UserNotFoundError();
