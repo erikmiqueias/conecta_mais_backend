@@ -32,6 +32,10 @@ export class TicketEncoderService {
     const qrCodeBase64 =
       await this.qrcodeProvider.generateBase64(signedTicketQrCode);
 
-    return qrCodeBase64;
+    return {
+      ticketId,
+      qrCode: qrCodeBase64,
+      ticketCode,
+    };
   }
 }
