@@ -5,9 +5,11 @@ import z from "zod";
 
 import {
   makeCheckoutTicketUseCase,
+  makeGetUserTicketsUseCase,
   makeUpdateTicketBatchUseCase,
 } from "../factories/ticket.factories.js";
 import {
+  GetUserTicketsOutputSchema,
   ProcessCheckoutOutputSchema,
   UpdateTicketBatchInputSchema,
 } from "./schemas/ticket.schemas.js";
@@ -65,6 +67,28 @@ export const ticketRoutes = (app: FastifyInstance) => {
 
       const result = await checkoutTicketUseCase.execute(userId, batchId);
       return reply.status(200).send(result);
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GEt",
+    url: "/me",
+    onRequest: [app.authenticate],
+    schema: {
+      tags: ["Ticket"],
+      security: [{ bearerAuth: [] }],
+      response: {
+        200: GetUserTicketsOutputSchema,
+        400: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user.sub;
+
+      const getUserTicketsUseCase = makeGetUserTicketsUseCase();
+      const tickets = await getUserTicketsUseCase.execute(userId);
+      return reply.status(200).send(tickets);
     },
   });
 };

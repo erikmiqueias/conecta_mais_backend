@@ -13,6 +13,12 @@ const TicketBatchCoreSchema = {
     .positive(),
 };
 
+const TicketCoreSchema = {
+  status: z.enum(TicketStatus, {
+    error: "Status is required and must be a valid TicketStatus",
+  }),
+};
+
 export const UpdateTicketBatchInputSchema = z.object({
   batchName: TicketBatchCoreSchema.batchName.optional(),
   totalCapacity: TicketBatchCoreSchema.totalCapacity.optional(),
@@ -38,3 +44,20 @@ export const ProcessCheckoutOutputSchema = z.object({
   userId: z.uuid(),
   ticketBatchId: z.uuid(),
 });
+
+export const GetUserTicketsOutputSchema = z.array(
+  z.object({
+    ...TicketCoreSchema,
+    id: z.uuid(),
+    ticketBatchId: z.uuid(),
+    ticketBatch: z.object({
+      id: z.uuid(),
+      batchName: z.string(),
+      eventId: z.uuid(),
+      event: z.object({
+        id: z.uuid(),
+        name: z.string(),
+      }),
+    }),
+  }),
+);
