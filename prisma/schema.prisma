@@ -108,13 +108,14 @@ model TicketBatch {
 }
 
 model Ticket {
-  id            String       @id @default(uuid())
-  userId        String
-  ticketBatchId String
-  ticketCode    String       @unique @default(uuid())
-  status        TicketStatus @default(PENDING)
-  ticketBatch   TicketBatch  @relation(fields: [ticketBatchId], references: [id])
-  user          User         @relation(fields: [userId], references: [id])
+  id              String       @id @default(uuid())
+  userId          String
+  ticketBatchId   String
+  ticketCode      String       @unique @default(uuid())
+  status          TicketStatus @default(PENDING)
+  ticketBatch     TicketBatch  @relation(fields: [ticketBatchId], references: [id])
+  user            User         @relation(fields: [userId], references: [id])
+  checkInDateTime DateTime?    @db.Timestamptz()
 }
 
 enum TicketStatus {
