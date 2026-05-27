@@ -1,4 +1,5 @@
 import { GetEventByIdRepository } from "@infra/database/prisma/repositories/event/get-event-by-id.repo.js";
+import { CheckInTicketRepository } from "@infra/database/prisma/repositories/ticket/check-in-ticket.repo.js";
 import { GetTicketBatchByIdRepository } from "@infra/database/prisma/repositories/ticket/get-ticket-batch-by-id.repo.js";
 import { GetTicketByIdRepository } from "@infra/database/prisma/repositories/ticket/get-ticket-by-id.repo.js";
 import { GetTicketByBatchIdAndUserIdRepository } from "@infra/database/prisma/repositories/ticket/get-ticket-by-user-id.repo.js";
@@ -11,6 +12,7 @@ import { QrCodeProvider } from "@infra/providers/qrcode/qrcode.provider.js";
 import { BullMQMailQueueProvider } from "@infra/providers/queue/mail-queue-provider.js";
 
 import { TicketEncoderService } from "../services/ticket-encoder.serivice.js";
+import { CheckInTicketUseCase } from "../use-cases/check-in-ticket.use-case.js";
 import { CheckoutTicketUseCase } from "../use-cases/checkout-ticket-use-case.js";
 import { GenerateTicketQRCodeUseCase } from "../use-cases/generate-ticket-qrcode.use-case.js";
 import { GetUserTicketsUseCase } from "../use-cases/get-user-tickets.use-case.js";
@@ -79,4 +81,16 @@ export const makeGenerateTicketQRCodeUseCase = () => {
     ticketEncoderService,
   );
   return generateTicketQRCodeUseCase;
+};
+
+export const makeCheckInTicketUseCase = () => {
+  const getEventByIdRepository = new GetEventByIdRepository();
+  const getTicketByIdRepository = new GetTicketByIdRepository();
+  const checkInTicketRepository = new CheckInTicketRepository();
+  const checkInTicketUseCase = new CheckInTicketUseCase(
+    getEventByIdRepository,
+    checkInTicketRepository,
+    getTicketByIdRepository,
+  );
+  return checkInTicketUseCase;
 };

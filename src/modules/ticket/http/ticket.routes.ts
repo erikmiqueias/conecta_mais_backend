@@ -1,9 +1,11 @@
 import { ErrorSchema } from "@shared/schemas/error.schema.js";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
+import jwt from "jsonwebtoken";
 import z from "zod";
 
 import {
+  makeCheckInTicketUseCase,
   makeCheckoutTicketUseCase,
   makeGenerateTicketQRCodeUseCase,
   makeGetUserTicketsUseCase,
@@ -123,6 +125,59 @@ export const ticketRoutes = (app: FastifyInstance) => {
         ticketId,
       );
       return reply.status(200).send(qrCodeData);
+    },
+  });
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/check-in",
+    onRequest: [app.authenticate, app.requireOrganizer],
+    schema: {
+      tags: ["Ticket"],
+      security: [{ bearerAuth: [] }],
+      body: z.object({
+        ticketQrCodeString: z.jwt({
+          error: "Invalid JWT format for ticket QR code",
+        }),
+      }),
+      response: {
+        204: z.null(),
+        400: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const organizerId = request.user.sub;
+      const { ticketQrCodeString } = request.body;
+
+      const verifyCheckInJwt = jwt.verify(
+        ticketQrCodeString,
+        process.env.TICKET_QR_CODE_SECRET!,
+      );
+
+      if (
+        typeof verifyCheckInJwt !== "object" ||
+        !verifyCheckInJwt.ticketCode
+      ) {
+        return reply
+          .status(400)
+          .send({ message: "Invalid QR code", code: "INVALID_QR_CODE" });
+      }
+
+      const ticketId = verifyCheckInJwt.sub;
+
+      if (!ticketId) {
+        return reply.status(400).send({
+          message: "Invalid QR code: missing ticket ID",
+          code: "INVALID_QR_CODE",
+        });
+      }
+
+      const checkInTicketUseCase = makeCheckInTicketUseCase();
+
+      await checkInTicketUseCase.execute(organizerId, ticketId);
+
+      return reply.status(204).send(null);
     },
   });
 };

@@ -141,14 +141,21 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
     });
   }
 
-  // --- 400 BAD REQUEST (Regras de negócio violadas ou requisições ilógicas) ---
-
   if (error.name === "UserAlreadyHasTicketError") {
-    return reply.status(400).send({
+    return reply.status(409).send({
       message: error.message,
       code: "USER_ALREADY_HAS_TICKET",
     });
   }
+
+  if (error.name === "TicketAlreadyCheckedInError") {
+    return reply.status(409).send({
+      message: error.message,
+      code: "TICKET_ALREADY_CHECKED_IN",
+    });
+  }
+
+  // --- 400 BAD REQUEST (Regras de negócio violadas ou requisições ilógicas) ---
 
   if (error.name === "CapacityExceededError") {
     return reply.status(400).send({
@@ -217,6 +224,13 @@ export const errorHandler: FastifyErrorHandler = (rawError, request, reply) => {
     return reply.status(400).send({
       message: error.message,
       code: "EVENT_NOT_NEEDED_ACCESS_CODE",
+    });
+  }
+
+  if (error.name === "InvalidTicketStatusError") {
+    return reply.status(400).send({
+      message: error.message,
+      code: "INVALID_TICKET_STATUS",
     });
   }
 

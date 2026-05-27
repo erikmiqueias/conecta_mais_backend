@@ -235,3 +235,17 @@ export class TicketNotAuthorizedError extends Error {
     this.name = "TicketNotAuthorizedError";
   }
 }
+
+export class TicketAlreadyCheckedInError extends Error {
+  constructor() {
+    super("Ticket already checked in");
+    this.name = "TicketAlreadyCheckedInError";
+  }
+}
+
+export class InvalidTicketStatusError extends Error {
+  constructor() {
+    super("Invalid ticket to check in");
+    this.name = "InvalidTicketStatusError";
+  }
+}

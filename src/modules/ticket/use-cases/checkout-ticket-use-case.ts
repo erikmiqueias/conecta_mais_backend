@@ -61,7 +61,7 @@ export class CheckoutTicketUseCase {
         attachments: [
           {
             filename: "qrcode.png",
-            content: qrcodeBase64.split(",")[1],
+            content: qrcodeBase64.qrCode.split(",")[1],
           },
         ],
         body: `
