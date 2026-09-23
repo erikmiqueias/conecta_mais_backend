@@ -15,6 +15,7 @@ import {
   GetUserTicketsOutputSchema,
   ProcessCheckoutOutputSchema,
   UpdateTicketBatchInputSchema,
+  UpdateTicketBatchOutputSchema,
 } from "./schemas/ticket.schemas.js";
 
 export const ticketRoutes = (app: FastifyInstance) => {
@@ -30,6 +31,12 @@ export const ticketRoutes = (app: FastifyInstance) => {
         batchId: z.uuid({ error: "Invalid UUId format for batch ID" }),
       }),
       body: UpdateTicketBatchInputSchema,
+      response: {
+        200: UpdateTicketBatchOutputSchema,
+        400: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
     },
     handler: async (request, reply) => {
       const { eventId, batchId } = request.params;
@@ -73,7 +80,7 @@ export const ticketRoutes = (app: FastifyInstance) => {
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
-    method: "GEt",
+    method: "GET",
     url: "/me",
     onRequest: [app.authenticate],
     schema: {

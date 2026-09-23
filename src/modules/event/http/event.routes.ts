@@ -9,7 +9,6 @@ import {
   makeCancelEventUseCase,
   makeCreateEventUseCase,
   makeDeleteEventUseCase,
-  makeEventSubscriptionUseCase,
   makeGetAvailableEventsUseCase,
   makeGetEventParticipantsUseCase,
   makeGetOrganizerEventsUseCase,
@@ -27,7 +26,6 @@ import {
   GetEventParticipantsOutputSchema,
   GetOrganizerEventsOutputSchema,
   GetUserSubscriptionsOutputSchema,
-  InputEventSubscriptionSchema,
   UpdateEventInputSchema,
 } from "./schemas/event.schema.js";
 
@@ -171,45 +169,6 @@ export const eventRoutes = (app: FastifyInstance) => {
       );
 
       return reply.status(200).send(updatedEvent);
-    },
-  });
-  app.withTypeProvider<ZodTypeProvider>().route({
-    method: "POST",
-    url: "/:eventId/subscribe",
-    onRequest: [app.authenticate],
-    schema: {
-      security: [{ bearerAuth: [] }],
-      tags: ["Event"],
-      params: z.object({
-        eventId: z.uuid({
-          error: "Event ID must be a valid UUID",
-        }),
-      }),
-      body: z.object({
-        accessCode: z.string().trim().min(1).optional(),
-      }),
-      response: {
-        201: InputEventSubscriptionSchema.omit({
-          eventId: true,
-          userId: true,
-        }),
-        400: ErrorSchema,
-        401: ErrorSchema,
-        404: ErrorSchema,
-        409: ErrorSchema,
-        500: ErrorSchema,
-      },
-    },
-    handler: async (request, reply) => {
-      const userId = request.user.sub;
-      const eventSubscriptionUseCase = makeEventSubscriptionUseCase();
-      const subscription = await eventSubscriptionUseCase.execute(
-        request.params.eventId,
-        userId,
-        request.body.accessCode,
-      );
-
-      return reply.status(201).send(subscription);
     },
   });
   app.withTypeProvider<ZodTypeProvider>().route({
